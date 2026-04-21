@@ -4,6 +4,8 @@
  */
 package dtos;
 
+import dtos.ENUMS.CategoriaEventoDTO;
+
 /**
  *
  * @author aaron
@@ -14,15 +16,10 @@ public class CategoriaDTO {
 
     private String UrlImagen;
 
-    private String nombreCategoria;
+    private CategoriaEventoDTO nombreCategoria;
 
-    public CategoriaDTO(Long idCategoria, String UrlImagen, String nombreCategoria) {
+    public CategoriaDTO(Long idCategoria, String UrlImagen, CategoriaEventoDTO nombreCategoria) {
         this.idCategoria = idCategoria;
-        this.UrlImagen = UrlImagen;
-        this.nombreCategoria = nombreCategoria;
-    }
-
-    public CategoriaDTO(String UrlImagen, String nombreCategoria) {
         this.UrlImagen = UrlImagen;
         this.nombreCategoria = nombreCategoria;
     }
@@ -46,11 +43,11 @@ public class CategoriaDTO {
         this.UrlImagen = UrlImagen;
     }
 
-    public String getNombreCategoria() {
+    public CategoriaEventoDTO getNombreCategoria() {
         return nombreCategoria;
     }
 
-    public void setNombreCategoria(String nombreCategoria) {
+    public void setNombreCategoria(CategoriaEventoDTO nombreCategoria) {
         this.nombreCategoria = nombreCategoria;
     }
 
