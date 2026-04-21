@@ -174,17 +174,4 @@ public class ControlOperaciones implements IControlOperaciones {
 
         asientosEvento.add(asientoEvento);
     }
-    
-    //inicio sesion
-    public UsuarioDTO iniciarSesion(LoginDTO datos){
-        for(Usuario u : usuarios){
-            if(u.getCorreo().equals(datos.getCorreo())){
-                if(u.getContrasenia().equals(datos.getContrasenia())){
-                    UsuarioDTO dto = UsuarioAdapter.entidadADTO(u);
-                    return dto;
-                }
-            }
-        }
-        return null;
-    }
 }

@@ -12,6 +12,7 @@
         <module>DTOs</module>
         <module>Pago</module>
         <module>GestionEvento</module>
+        <module>InicioSesion</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

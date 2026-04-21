@@ -4,6 +4,7 @@
  */
 package controladores;
 
+import dtos.EventoDTO;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -29,7 +30,7 @@ public class ControlGestionEvento {
     
     public boolean agregarEvento(EventoDTO evento){
         int contador = listaEventos.size();
-        evento.setId(contador+1);
+        evento.setIdEvento(Long.parseLong(contador+1));
         listaEventos.add(evento);
         if(contador != listaEventos.size()){
             return true;

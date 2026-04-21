@@ -2,12 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package negocio;
+package interfaces;
+
+import dtos.UsuarioDTO;
 
 /**
  *
- * @author Dayanara Peralta G
+ * @author aaron
  */
-public class InicioSesion {
-    
+public interface IFachadaInicioSesion {
+        //inicia sesion
+    public UsuarioDTO iniciarSesion(UsuarioDTO contrasenia);
 }
