@@ -4,6 +4,7 @@
  */
 package controladores;
 
+import dtos.ENUMS.EstadoEventoDTO;
 import dtos.EventoDTO;
 import java.util.List;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class ControlGestionEvento {
     
     public boolean eliminarEvento(Long idEvento){
         for(EventoDTO evento : listaEventos){
-            if(evento.getId() == idEvento){
+            if(evento.getIdEvento() == idEvento){
                 evento.setEstado(EstadoEventoDTO.CANCELADO);
                 return true;
             }
