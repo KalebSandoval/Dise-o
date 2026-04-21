@@ -5,6 +5,7 @@ import Entitys.Evento;
 import Entitys.Usuario;
 import Entitys.ENUMS.EstadoAsiento;
 import Entitys.ENUMS.EstadoEvento;
+import adapters.UsuarioAdapter;
 import interfaz.IControlOperaciones;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -172,5 +173,18 @@ public class ControlOperaciones implements IControlOperaciones {
         }
 
         asientosEvento.add(asientoEvento);
+    }
+    
+    //inicio sesion
+    public UsuarioDTO iniciarSesion(LoginDTO datos){
+        for(Usuario u : usuarios){
+            if(u.getCorreo().equals(datos.getCorreo())){
+                if(u.getContrasenia().equals(datos.getContrasenia())){
+                    UsuarioDTO dto = UsuarioAdapter.entidadADTO(u);
+                    return dto;
+                }
+            }
+        }
+        return null;
     }
 }

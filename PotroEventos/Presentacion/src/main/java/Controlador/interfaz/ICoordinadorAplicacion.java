@@ -32,4 +32,6 @@ public interface ICoordinadorAplicacion {
     public void mostrarConsultarEvento();
 
     public void volverAConsultar();
+    
+    
 }

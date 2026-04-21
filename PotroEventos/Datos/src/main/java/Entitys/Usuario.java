@@ -14,6 +14,7 @@ public class Usuario {
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String correo;
+    private String contrasenia;
 
     public Usuario() {
     }
@@ -26,11 +27,28 @@ public class Usuario {
         this.correo = correo;
     }
 
+    public Usuario(Long idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String correo, String contrasenia) {
+        this.idUsuario = idUsuario;
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.correo = correo;
+        this.contrasenia = contrasenia;
+    }
+
     public Usuario(String nombre, String apellidoPaterno, String apellidoMaterno, String correo) {
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.correo = correo;
+    }
+
+    public Usuario(String nombre, String apellidoPaterno, String apellidoMaterno, String correo, String contrasenia) {
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.correo = correo;
+        this.contrasenia = contrasenia;
     }
 
     public Long getIdUsuario() {
@@ -71,6 +89,14 @@ public class Usuario {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    public String getContrasenia() {
+        return contrasenia;
+    }
+
+    public void setContrasenia(String contraseña) {
+        this.contrasenia = contraseña;
     }
 
     @Override
