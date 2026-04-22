@@ -12,11 +12,9 @@ import java.util.List;
  */
 public interface IEventoDAO {
 
-    Evento guardar(Evento evento);
-
-    List<Evento> obtenerTodos();
-
     Evento buscarPorId(Long id);
 
-    boolean eliminar(Long id);
+    List<Evento> buscarTodos();
+
+    Evento guardar(Evento evento);
 }

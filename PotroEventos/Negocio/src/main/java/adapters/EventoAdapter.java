@@ -1,23 +1,22 @@
 package adapters;
 
+import Entitys.Categoria;
 import Entitys.ENUMS.CategoriaEvento;
 import Entitys.ENUMS.EstadoEvento;
 import Entitys.Evento;
+import dtos.CategoriaDTO;
 import dtos.ENUMS.CategoriaEventoDTO;
 import dtos.ENUMS.EstadoEventoDTO;
 import dtos.EventoDTO;
 
 /**
- *
- * @author Aaron Burciaga - 262788
- * @author Brian Sandoval - 262741
- * @author Dayanara Peralta - 262695
- * @author María Valdez - 262775
- *
- *
+ * Adapter para convertir entre Evento y EventoDTO.
  */
 public class EventoAdapter {
 
+    /**
+     * Entidad -> DTO
+     */
     public EventoDTO entidadADTO(Evento evento) {
 
         if (evento == null) {
@@ -26,15 +25,19 @@ public class EventoAdapter {
 
         return new EventoDTO(
                 evento.getIdEvento(),
-                convertirCategoriaADTO(evento.getCategoriaEvento()),
+                convertirCategoriaADTO(evento.getCategoria()),
                 evento.getNombreEvento(),
                 evento.getInformacionEvento(),
                 evento.getFechaHora(),
                 evento.getUbicacion(),
-                convertirEstadoADTO(evento.getEstadoEvento())
+                convertirEstado(evento.getEstadoEvento()),
+                evento.getUrlImagen()
         );
     }
 
+    /**
+     * DTO -> Entidad
+     */
     public Evento dtoAEntidad(EventoDTO dto) {
 
         if (dto == null) {
@@ -43,48 +46,56 @@ public class EventoAdapter {
 
         return new Evento(
                 dto.getIdEvento(),
-                convertirDTOACategoria(dto.getCategoriaEvento()),
+                convertirCategoriaEntidad(dto.getCategoriaDTO()),
                 dto.getNombreEvento(),
                 dto.getInformacionEvento(),
                 dto.getFechaHora(),
                 dto.getUbicacion(),
-                convertirDTOAEstado(dto.getEstadoEvento())
+                convertirEstado(dto.getEstadoEvento()),
+                dto.getUrlImagen()
         );
     }
 
-    private CategoriaEventoDTO convertirCategoriaADTO(CategoriaEvento categoria) {
+    /**
+     * Categoria Entidad -> DTO
+     */
+    private CategoriaDTO convertirCategoriaADTO(Categoria categoria) {
 
         if (categoria == null) {
             return null;
         }
 
-        return CategoriaEventoDTO.valueOf(categoria.name());
+        return new CategoriaDTO(
+                categoria.getIdCategoria(),
+                categoria.getUrlImagen(),
+                CategoriaEventoDTO.valueOf(categoria.getNombreCategoria().name())
+        );
     }
 
-    private CategoriaEvento convertirDTOACategoria(CategoriaEventoDTO categoriaDTO) {
+    /**
+     * CategoriaDTO -> Entidad
+     */
+    private Categoria convertirCategoriaEntidad(CategoriaDTO dto) {
 
-        if (categoriaDTO == null) {
+        if (dto == null) {
             return null;
         }
 
-        return CategoriaEvento.valueOf(categoriaDTO.name());
+        return new Categoria(
+                dto.getIdCategoria(),
+                dto.getUrlImagen(),
+                CategoriaEvento.valueOf(dto.getNombreCategoria().name())
+        );
     }
 
-    private EstadoEventoDTO convertirEstadoADTO(EstadoEvento estado) {
-
-        if (estado == null) {
-            return null;
-        }
-
-        return EstadoEventoDTO.valueOf(estado.name());
+    /**
+     * Estado conversion
+     */
+    private EstadoEventoDTO convertirEstado(EstadoEvento estado) {
+        return estado != null ? EstadoEventoDTO.valueOf(estado.name()) : null;
     }
 
-    private EstadoEvento convertirDTOAEstado(EstadoEventoDTO estadoDTO) {
-
-        if (estadoDTO == null) {
-            return null;
-        }
-
-        return EstadoEvento.valueOf(estadoDTO.name());
+    private EstadoEvento convertirEstado(EstadoEventoDTO dto) {
+        return dto != null ? EstadoEvento.valueOf(dto.name()) : null;
     }
 }
