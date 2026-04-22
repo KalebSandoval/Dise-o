@@ -2,6 +2,8 @@ package Controlador.interfaz;
 
 import dtos.CategoriaDTO;
 import dtos.EventoDTO;
+import dtos.LoginDTO;
+import dtos.UsuarioDTO;
 import java.util.List;
 
 
@@ -50,4 +52,9 @@ public interface ICoordinadorAplicacion {
     
     public List<CategoriaDTO> consultarCategorias();
     
+    public UsuarioDTO iniciarSesion(LoginDTO login);
+    
+    public UsuarioDTO verificarUsuario(String correo, String contrasenia);
+    
+    public void setUsuarioSesion(UsuarioDTO usuario);
 }

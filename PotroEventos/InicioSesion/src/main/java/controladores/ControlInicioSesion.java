@@ -4,6 +4,7 @@
  */
 package controladores;
 
+import adapters.LoginAdapter;
 import dtos.UsuarioDTO;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * @author aaron
  */
-import adapters.UsuarioAdapter;
+import dtos.LoginDTO;
 public class ControlInicioSesion {
         
     private List<UsuarioDTO> listaUsuarios = new ArrayList<>();
@@ -27,13 +28,17 @@ public class ControlInicioSesion {
         return instancia;
     }
     
-    //inicio sesion
-    public UsuarioDTO iniciarSesion(UsuarioDTO contrasenia){
-        for(UsuarioDTO u : listaUsuarios){
-            if(u.getCorreo().equals(u.getCorreo())){
-                if(u.getContrasenia().equals(contrasenia.getContrasenia())){
-                    UsuarioDTO dto = UsuarioAdapter.entidadADTO(u);
-                    return dto;
+    /**
+     * 
+     * @param login
+     * @return 
+     */
+    public UsuarioDTO iniciarSesion(LoginDTO login){
+        
+        for(UsuarioDTO usuario : listaUsuarios){
+            if(usuario.getCorreo().equals(login.getCorreo())){
+                if(usuario.getContrasenia().equals(login.getContrasenia())){
+                    return usuario;
                 }
             }
         }
@@ -44,5 +49,6 @@ public class ControlInicioSesion {
         if(correo.isEmpty() || contrasenia.isEmpty()){
             return null;
         }
+        return null;
     }
 }

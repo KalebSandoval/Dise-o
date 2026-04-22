@@ -5,6 +5,7 @@
 package Pantallas;
 
 import Controlador.interfaz.ICoordinadorAplicacion;
+import dtos.LoginDTO;
 import dtos.UsuarioDTO;
 import java.awt.Color;
 import utilerias.BotonUtileria;
@@ -253,7 +254,7 @@ public class FrmInicioSesion extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "Por favor complete todos los campos.");
             return;
         }
-        UsuarioDTO usuario = coordinador.validarUsuario(loginDTO);
+        UsuarioDTO usuario = coordinador.verificarUsuario(correo, contrasenia);
         if(usuario != null){
             javax.swing.JOptionPane.showMessageDialog(this, "Bienvenido " + usuario.getNombre());
             coordinador.setUsuarioSesion(usuario);

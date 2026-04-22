@@ -45,7 +45,7 @@ public class ControlGestionEvento {
     public boolean cancelarEvento(Long idEvento){
         for(EventoDTO evento : listaEventos){
             if(evento.getIdEvento() == idEvento){
-                evento.setEstado(EstadoEventoDTO.CANCELADO);
+                evento.setEstadoEvento(EstadoEventoDTO.CANCELADO);
                 return true;
             }
         }

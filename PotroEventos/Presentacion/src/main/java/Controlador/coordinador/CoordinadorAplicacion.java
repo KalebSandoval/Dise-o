@@ -13,6 +13,8 @@ import Pantallas.vistas.PnlConsultarEvento;
 import Pantallas.vistas.PnlEventos;
 import dtos.CategoriaDTO;
 import dtos.EventoDTO;
+import dtos.LoginDTO;
+import dtos.UsuarioDTO;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -178,5 +180,15 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     public List<CategoriaDTO> consultarCategorias() {
         return new ArrayList<>();
     }
-
+    @Override
+    public UsuarioDTO iniciarSesion(LoginDTO login){
+        return new UsuarioDTO();
+    }
+    @Override
+    public UsuarioDTO verificarUsuario(String correo, String contrasenia){
+        return new UsuarioDTO();
+    }
+    @Override
+    public void setUsuarioSesion(UsuarioDTO usuario){
+    }
 }

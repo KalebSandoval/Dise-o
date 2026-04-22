@@ -4,6 +4,7 @@
  */
 package interfaces;
 
+import dtos.LoginDTO;
 import dtos.UsuarioDTO;
 
 /**
@@ -12,5 +13,7 @@ import dtos.UsuarioDTO;
  */
 public interface IFachadaInicioSesion {
         //inicia sesion
-    public UsuarioDTO iniciarSesion(UsuarioDTO contrasenia);
+    public UsuarioDTO iniciarSesion(LoginDTO login);
+    
+    public UsuarioDTO verificarUsuario(String correo, String contrasenia);
 }
