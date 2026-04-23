@@ -5,7 +5,7 @@
 package Pantallas;
 
 import Controlador.interfaz.ICoordinadorAplicacion;
-import dtos.EventoDTO;
+import dtos.ReservacionDTO;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
@@ -20,21 +20,24 @@ public class FrmDetallesCompra extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmDetallesCompra.class.getName());
     private ICoordinadorAplicacion coordinador;
-    private EventoDTO evento;
+    private ReservacionDTO reservacion;
 
     /**
      * Creates new form frmDetallesCompra
      */
-    public FrmDetallesCompra(ICoordinadorAplicacion coordinador, EventoDTO evento) {
+    public FrmDetallesCompra(ICoordinadorAplicacion coordinador, ReservacionDTO reservacion) {
         this.coordinador = coordinador;
-        this.evento = evento;
+        this.reservacion = reservacion;
         initComponents();
         setLocationRelativeTo(null);
         cargarDatos();
     }
     
     public void cargarDatos(){
-        ImageIcon icono = new ImageIcon(evento.getUrlImagen());
+        if(reservacion == null){
+            return;
+        }
+        ImageIcon icono = new ImageIcon(reservacion.getBoleto().getEvento().getUrlImagen());
         int ancho = getWidth();
         int alto = getHeight();
         if (ancho <= 0) {
@@ -46,13 +49,26 @@ public class FrmDetallesCompra extends javax.swing.JFrame {
         Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
         iconEvento.setIcon(new ImageIcon(img));
         iconEvento.setText("");
+        ImageIcon icono2 = new ImageIcon(reservacion.getBoleto().getCodigoQR());
+        int ancho2 = getWidth();
+        int alto2 = getHeight();
+        if (ancho2 <= 0) {
+            ancho2 = 181;
+        }
+        if (alto2 <= 0) {
+            alto2 = 152;
+        }
+        Image img2 = icono.getImage().getScaledInstance(ancho2, alto2, Image.SCALE_SMOOTH);
+        iconQR.setIcon(new ImageIcon(img2));
+        iconQR.setText("");
+        this.txtEvento.setText(reservacion.getBoleto().getEvento().getNombreEvento());
         /*
-        falta establecer los detalles de la compra, pero quiero saber
-        sí si tendremos un DTO de la compra o la reservación.
+        no le movi nada a asientos, por eso marca algo x por el momento
         */
-        this.txtEvento.setText(evento.getNombreEvento());
-        this.txtFechaHora.setText(String.valueOf(evento.getFechaHora()));
-        this.txtUbicacion.setText(evento.getUbicacion());
+        this.txtAsientos.setText("10, 11, 12");
+        this.txtFechaHora.setText(String.valueOf(reservacion.getBoleto().getEvento().getFechaHora()));
+        this.txtUbicacion.setText(reservacion.getBoleto().getEvento().getUbicacion());
+        this.txtHorasAntes.setText(String.valueOf(reservacion.getBoleto().getEvento().getFechaHora().minusHours(48)));
     }
 
     /**

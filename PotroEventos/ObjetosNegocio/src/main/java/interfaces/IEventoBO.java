@@ -1,5 +1,6 @@
 package interfaces;
 
+import dtos.CategoriaDTO;
 import dtos.EventoDTO;
 import excepciones.NegocioException;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface IEventoBO {
 
     EventoDTO guardarEvento(EventoDTO evento) throws NegocioException;
 
-    List<EventoDTO> obtenerEventos();
+    List<EventoDTO> obtenerEventosPorCategoria(CategoriaDTO categoria);
 
     EventoDTO obtenerEventoPorId(Long id) throws NegocioException;
 }

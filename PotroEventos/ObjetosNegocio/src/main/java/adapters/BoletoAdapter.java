@@ -15,29 +15,22 @@ import dtos.ENUMS.EstadoBoletoDTO;
  */
 public class BoletoAdapter {
 
-    public BoletoDTO entidadADTO(Boleto boletoEntidad) {
+    public static BoletoDTO entidadADTO(Boleto boletoEntidad) {
 
         if (boletoEntidad == null) {
             return null;
-        }
-
-        Long idUsuario = null;
-
-        if (boletoEntidad.getUsuario() != null) {
-            idUsuario = boletoEntidad.getUsuario().getIdUsuario();
         }
 
         return new BoletoDTO(
                 boletoEntidad.getIdBoleto(),
                 boletoEntidad.getCodigoQR(),
                 boletoEntidad.getPrecio(),
-                boletoEntidad.getFechaCompra(),
                 convertirEstadoADTO(boletoEntidad.getEstadoBoleto()),
-                idUsuario
+                EventoAdapter.entidadADTO(boletoEntidad.getEvento())
         );
     }
 
-    public Boleto dtoAEntidad(BoletoDTO boletoDTO) {
+    public static Boleto dtoAEntidad(BoletoDTO boletoDTO) {
 
         if (boletoDTO == null) {
             return null;
@@ -48,19 +41,13 @@ public class BoletoAdapter {
         boleto.setIdBoleto(boletoDTO.getIdBoleto());
         boleto.setCodigoQR(boletoDTO.getCodigoQR());
         boleto.setPrecio(boletoDTO.getPrecio());
-        boleto.setFechaCompra(boletoDTO.getFechaCompra());
         boleto.setEstadoBoleto(convertirEstadoAEntidad(boletoDTO.getEstadoBoleto()));
-
-        if (boletoDTO.getIdUsuario() != null) {
-            Usuario usuario = new Usuario();
-            usuario.setIdUsuario(boletoDTO.getIdUsuario());
-            boleto.setUsuario(usuario);
-        }
+        boleto.setEvento(EventoAdapter.dtoAEntidad(boletoDTO.getEvento()));
 
         return boleto;
     }
 
-    private EstadoBoletoDTO convertirEstadoADTO(EstadoBoleto estadoEntidad) {
+    private static EstadoBoletoDTO convertirEstadoADTO(EstadoBoleto estadoEntidad) {
 
         if (estadoEntidad == null) {
             return null;
@@ -69,7 +56,7 @@ public class BoletoAdapter {
         return EstadoBoletoDTO.valueOf(estadoEntidad.name());
     }
 
-    private EstadoBoleto convertirEstadoAEntidad(EstadoBoletoDTO estadoDTO) {
+    private static EstadoBoleto convertirEstadoAEntidad(EstadoBoletoDTO estadoDTO) {
 
         if (estadoDTO == null) {
             return null;

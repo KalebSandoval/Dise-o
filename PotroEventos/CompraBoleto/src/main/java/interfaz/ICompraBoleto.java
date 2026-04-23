@@ -4,6 +4,8 @@ import dtos.EventoDTO;
 import dtos.SeccionDTO;
 import dtos.AsientoEventoDTO;
 import dtos.AsientoDTO;
+import dtos.CategoriaDTO;
+import dtos.ReservacionDTO;
 import excepciones.CompraBoletoException;
 import java.util.List;
 
@@ -57,5 +59,13 @@ public interface ICompraBoleto {
      * @throws excepciones.CompraBoletoException
      */
     List<AsientoEventoDTO> obtenerEstadoAsientosPorEvento(Long idEvento) throws CompraBoletoException;
+    
+    List<EventoDTO> obtenerEventosCategoria(CategoriaDTO categoria) throws CompraBoletoException;
+    
+    boolean agregarReservacion(ReservacionDTO reservacion) throws CompraBoletoException;
+    
+    List<ReservacionDTO> obtenerReservacionesUsuario(Long idUsuario) throws CompraBoletoException;
+    
+    List<CategoriaDTO> obtenerCategorias() throws CompraBoletoException;
 
 }

@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
  * @author Dayanara Peralta - 262695
  * @author María Valdez - 262775
  */
-public class PnlEvento extends javax.swing.JPanel {
+public class PnlEvento extends Panel {
     
     private boolean modoConsulta;
     private boolean modoVista;
@@ -46,9 +46,9 @@ public class PnlEvento extends javax.swing.JPanel {
         return new PnlEvento(evento, null, padre, false); 
     }
 
-    public static PnlEvento crearParaConsulta(EventoDTO evento, ReservacionDTO reservacion, Component padre) {
+    public static PnlEvento crearParaConsulta(ReservacionDTO reservacion, Component padre) {
         // Le pasamos la reservación y true al modoConsulta
-        return new PnlEvento(evento, reservacion, padre, true);
+        return new PnlEvento(reservacion.getBoleto().getEvento(), reservacion, padre, true);
     }
 
     private void cargarEvento(){
@@ -153,7 +153,7 @@ public class PnlEvento extends javax.swing.JPanel {
     private void btnMostrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarActionPerformed
         // TODO add your handling code here:
         if(padre instanceof PnlConsultar c){
-            c.mostrarDetalles(evento);
+            c.mostrarDetalles(reservacion);
         }
         if(padre instanceof PnlEventos e){
             e.mostrarEvento(evento);

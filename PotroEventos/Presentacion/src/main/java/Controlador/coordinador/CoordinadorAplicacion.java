@@ -14,9 +14,14 @@ import Pantallas.vistas.PnlEventos;
 import dtos.CategoriaDTO;
 import dtos.EventoDTO;
 import dtos.LoginDTO;
+import dtos.ReservacionDTO;
 import dtos.UsuarioDTO;
 import fachada.InicioSesionFachada;
 import interfaces.IFachadaInicioSesion;
+import excepciones.CompraBoletoException;
+import excepciones.NegocioException;
+import fachada.CompraBoletoFachada;
+import interfaz.ICompraBoleto;
 import java.util.ArrayList;
 import java.util.List;
 import interfaces.IGestionUsuariosFachada;
@@ -30,6 +35,7 @@ import interfaces.IGestionUsuariosFachada;
 public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     private IFachadaInicioSesion logi = InicioSesionFachada.getInstance();
 
+    private ICompraBoleto controlCompra = new CompraBoletoFachada();
     private FrmInicioSesion frmInicioSesion;
     private FrmRegistrarse frmRegistrarse;
     private FrmPago frmPago;
@@ -100,7 +106,9 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         }
         frmPlantilla.setContenido(new PnlCategorias(this));
         frmPlantilla.setVisible(true);
-        frmInicioSesion.dispose();
+        if(frmInicioSesion != null){
+            frmInicioSesion.dispose();
+        }            
     }
 
     @Override
@@ -124,10 +132,10 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     }
     
     @Override
-    public void mostrarDetalles(EventoDTO evento){
+    public void mostrarDetalles(ReservacionDTO reservacion){
         ocultarTodo();
         if(frmDetalles == null){
-            frmDetalles = new FrmDetallesCompra(this, evento);
+            frmDetalles = new FrmDetallesCompra(this, reservacion);
         }
         frmDetalles.setVisible(true);
     }
@@ -163,34 +171,25 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     }
 
     @Override
-    public List<EventoDTO> consultarEventos() {
-        return new ArrayList<>();
-    }
-
-    @Override
     public List<EventoDTO> consultarEventos(CategoriaDTO categoria) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<EventoDTO> consultarEventosProximos(Long idUsuario) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<EventoDTO> consultarEventosPasados(Long idUsuario) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<EventoDTO> consultarEventosCancelados(Long idUsuario) {
-        return new ArrayList<>();
+        try{
+            return controlCompra.obtenerEventosCategoria(categoria);
+        } catch(CompraBoletoException ex){
+            System.out.println("Fallo al consultar eventos: " + ex.getMessage());
+            return null;
+        }
     }
 
     @Override
     public List<CategoriaDTO> consultarCategorias() {
-        return new ArrayList<>();
+        try {
+            return controlCompra.obtenerCategorias();
+        } catch (CompraBoletoException ex) {
+            System.out.println("Fallo al consultar categorías: " + ex.getMessage());
+            return null;
+        }
     }
+    
     @Override
     public UsuarioDTO iniciarSesion(String correo, String contrasenia){
         return logi.verificarUsuario(correo, contrasenia);
@@ -211,4 +210,25 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         logi.cerrarSesion();
         this.mostrarInicioSesion();
     }
+
+    
+    public List<ReservacionDTO> consultarReservaciones(Long idUsuario) {
+        try{
+            return controlCompra.obtenerReservacionesUsuario(idUsuario);
+        } catch(CompraBoletoException ex){
+            System.out.println("Fallo al consultar reservaciones: " + ex.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public boolean agregarReservacion(ReservacionDTO reservacion) {
+        try{
+            return controlCompra.agregarReservacion(reservacion);
+        } catch(CompraBoletoException ex){
+            System.out.println("Fallo al consultar reservaciones: " + ex.getMessage());
+        }
+        return false;
+    }
+
 }

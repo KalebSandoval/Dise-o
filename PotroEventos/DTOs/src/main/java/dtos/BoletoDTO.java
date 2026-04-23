@@ -15,28 +15,18 @@ public class BoletoDTO {
     private Long idBoleto;
     private String codigoQR;
     private Double precio;
-    private LocalDate fechaCompra;
     private EstadoBoletoDTO estadoBoleto;
-    private Long idUsuario;
+    private EventoDTO evento;
 
     public BoletoDTO() {
     }
 
-    public BoletoDTO(Long idBoleto, String codigoQR, Double precio, LocalDate fechaCompra, EstadoBoletoDTO estadoBoleto, Long idUsuario) {
+    public BoletoDTO(Long idBoleto, String codigoQR, Double precio, EstadoBoletoDTO estadoBoleto, EventoDTO evento) {
         this.idBoleto = idBoleto;
         this.codigoQR = codigoQR;
         this.precio = precio;
-        this.fechaCompra = fechaCompra;
         this.estadoBoleto = estadoBoleto;
-        this.idUsuario = idUsuario;
-    }
-
-    public BoletoDTO(String codigoQR, Double precio, LocalDate fechaCompra, EstadoBoletoDTO estadoBoleto, Long idUsuario) {
-        this.codigoQR = codigoQR;
-        this.precio = precio;
-        this.fechaCompra = fechaCompra;
-        this.estadoBoleto = estadoBoleto;
-        this.idUsuario = idUsuario;
+        this.evento = evento;
     }
 
     public Long getIdBoleto() {
@@ -63,14 +53,6 @@ public class BoletoDTO {
         this.precio = precio;
     }
 
-    public LocalDate getFechaCompra() {
-        return fechaCompra;
-    }
-
-    public void setFechaCompra(LocalDate fechaCompra) {
-        this.fechaCompra = fechaCompra;
-    }
-
     public EstadoBoletoDTO getEstadoBoleto() {
         return estadoBoleto;
     }
@@ -79,17 +61,12 @@ public class BoletoDTO {
         this.estadoBoleto = estadoBoleto;
     }
 
-    public Long getIdUsuario() {
-        return idUsuario;
+    public EventoDTO getEvento() {
+        return evento;
     }
 
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    @Override
-    public String toString() {
-        return "BoletoDTO{" + "idBoleto=" + idBoleto + ", codigoQR=" + codigoQR + ", precio=" + precio + ", fechaCompra=" + fechaCompra + ", estadoBoleto=" + estadoBoleto + ", idUsuario=" + idUsuario + '}';
+    public void setEvento(EventoDTO evento) {
+        this.evento = evento;
     }
 
 }

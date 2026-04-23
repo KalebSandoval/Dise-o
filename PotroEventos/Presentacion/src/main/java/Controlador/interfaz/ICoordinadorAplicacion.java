@@ -2,6 +2,7 @@ package Controlador.interfaz;
 
 import dtos.CategoriaDTO;
 import dtos.EventoDTO;
+import dtos.ReservacionDTO;
 import dtos.UsuarioDTO;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public interface ICoordinadorAplicacion {
 
     public void mostrarInfoEvento(EventoDTO evento);
     
-    public void mostrarDetalles(EventoDTO evento);
+    public void mostrarDetalles(ReservacionDTO reservacion);
 
     public void finalizarCompra();
 
@@ -39,17 +40,13 @@ public interface ICoordinadorAplicacion {
 
     public void volverAConsultar();
     
-    public List<EventoDTO> consultarEventos();
-    
     public List<EventoDTO> consultarEventos(CategoriaDTO categoria);
     
-    public List<EventoDTO> consultarEventosProximos(Long idUsuario);
-    
-    public List<EventoDTO> consultarEventosPasados(Long idUsuario);
-    
-    public List<EventoDTO> consultarEventosCancelados(Long idUsuario);
-    
     public List<CategoriaDTO> consultarCategorias();
+    
+    public List<ReservacionDTO> consultarReservaciones(Long idUsuario);
+    
+    public boolean agregarReservacion(ReservacionDTO reservacion);
     
     public UsuarioDTO iniciarSesion(String correo, String contrasenia);
     

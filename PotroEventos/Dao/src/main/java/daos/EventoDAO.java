@@ -38,8 +38,14 @@ public class EventoDAO implements IEventoDAO {
     }
 
     @Override
-    public List<Evento> buscarTodos() {
-        return new ArrayList<>(eventos); // Retornamos una copia para proteger la lista original
+    public List<Evento> buscarTodosCategoria(Categoria categoria) {
+        List<Evento> lista = new ArrayList<>(); 
+        for(Evento e : eventos){
+            if(e.getCategoriaEvento().getNombre() == categoria.getNombre()){
+                lista.add(e);
+            }
+        }
+        return lista;
     }
 
     @Override
@@ -55,4 +61,5 @@ public class EventoDAO implements IEventoDAO {
         eventos.add(evento);
         return evento;
     }
+
 }

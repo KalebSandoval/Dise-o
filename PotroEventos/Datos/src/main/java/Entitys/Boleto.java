@@ -15,28 +15,25 @@ public class Boleto {
     private Long idBoleto;
     private String codigoQR;
     private Double precio;
-    private LocalDate fechaCompra;
     private EstadoBoleto estadoBoleto;
-    private Usuario usuario;
+    private Evento evento;
 
     public Boleto() {
     }
 
-    public Boleto(Long idBoleto, String codigoQR, Double precio, LocalDate fechaCompra, EstadoBoleto estadoBoleto, Usuario usuario) {
+    public Boleto(Long idBoleto, String codigoQR, Double precio, EstadoBoleto estadoBoleto, Evento evento) {
         this.idBoleto = idBoleto;
         this.codigoQR = codigoQR;
         this.precio = precio;
-        this.fechaCompra = fechaCompra;
         this.estadoBoleto = estadoBoleto;
-        this.usuario = usuario;
+        this.evento = evento;
     }
 
-    public Boleto(String codigoQR, Double precio, LocalDate fechaCompra, EstadoBoleto estadoBoleto, Usuario usuario) {
+    public Boleto(String codigoQR, Double precio, EstadoBoleto estadoBoleto, Evento evento) {
         this.codigoQR = codigoQR;
         this.precio = precio;
-        this.fechaCompra = fechaCompra;
         this.estadoBoleto = estadoBoleto;
-        this.usuario = usuario;
+        this.evento = evento;
     }
 
     public Long getIdBoleto() {
@@ -63,14 +60,6 @@ public class Boleto {
         this.precio = precio;
     }
 
-    public LocalDate getFechaCompra() {
-        return fechaCompra;
-    }
-
-    public void setFechaCompra(LocalDate fechaCompra) {
-        this.fechaCompra = fechaCompra;
-    }
-
     public EstadoBoleto getEstadoBoleto() {
         return estadoBoleto;
     }
@@ -79,17 +68,12 @@ public class Boleto {
         this.estadoBoleto = estadoBoleto;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Evento getEvento() {
+        return evento;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    @Override
-    public String toString() {
-        return "Boleto{" + "idBoleto=" + idBoleto + ", codigoQR=" + codigoQR + ", precio=" + precio + ", fechaCompra=" + fechaCompra + ", estadoBoleto=" + estadoBoleto + ", usuario=" + usuario + '}';
+    public void setEvento(Evento evento) {
+        this.evento = evento;
     }
 
 }

@@ -1,8 +1,12 @@
 package objetosNegocio;
 
+import Entitys.ENUMS.CategoriaEvento;
 import Entitys.Evento;
-//import adapters.EventoAdapter;
+import adapters.EventoAdapter;
+import Entitys.Categoria;
+import adapters.EventoAdapter;
 import daos.EventoDAO;
+import dtos.CategoriaDTO;
 import dtos.EventoDTO;
 import excepciones.NegocioException;
 import interfaces.IEventoBO;
@@ -12,7 +16,7 @@ import java.util.List;
 /**
  * Objeto de negocio para Evento. Implementa patrón Singleton.
  */
-/*public class EventoBO implements IEventoBO {
+public class EventoBO implements IEventoBO {
     
     private static EventoBO instancia;
     private final IEventoDAO eventoDAO;
@@ -37,8 +41,8 @@ import java.util.List;
     }
     
     @Override
-    public List<EventoDTO> obtenerEventos() {
-        return EventoAdapter.listaDTOs(eventoDAO.buscarTodos());
+    public List<EventoDTO> obtenerEventosPorCategoria(CategoriaDTO categoria) {
+        return EventoAdapter.listaDTOs(eventoDAO.buscarTodosCategoria(new Categoria(categoria.getIdCategoria(), CategoriaEvento.valueOf(categoria.getNombreCategoria().name()), categoria.getUrlImagen())));
     }
     
     @Override
@@ -82,4 +86,4 @@ import java.util.List;
         
         return true; // Si pasó todos los filtros
     }
-}*/
+}

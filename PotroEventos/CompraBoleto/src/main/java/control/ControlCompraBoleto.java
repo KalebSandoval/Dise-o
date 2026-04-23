@@ -7,7 +7,11 @@ import Entitys.*;
 import dtos.ENUMS.CategoriaEventoDTO;
 import objetosNegocio.*;
 import excepciones.CompraBoletoException;
+import interfaces.IAsientoBO;
+import interfaces.IAsientoEventoBO;
+import interfaces.ICategoriaBO;
 import interfaces.IEventoBO;
+import interfaces.IReservacionBO;
 import interfaces.ISeccionBO;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +29,18 @@ public class ControlCompraBoleto {
     // Dependencias a la capa de Negocio (BOs)
     private final IEventoBO eventoBO;
     private final ISeccionBO seccionBO;
-    private final AsientoBO asientoBO;
-    private final AsientoEventoBO asientoEventoBO;
+    private final IAsientoBO asientoBO;
+    private final IAsientoEventoBO asientoEventoBO;
+    private final IReservacionBO reservacionBO;
+    private final ICategoriaBO categoriaBO;
 
     public ControlCompraBoleto() {
         this.eventoBO = EventoBO.getInstance();
         this.seccionBO = SeccionBO.getInstance();
         this.asientoBO = AsientoBO.getInstance();
         this.asientoEventoBO = AsientoEventoBO.getInstance();
+        this.reservacionBO = ReservacionBO.getInstance();
+        this.categoriaBO = CategoriaBO.getInstance();
     }
 
     /**
@@ -123,6 +131,38 @@ public class ControlCompraBoleto {
 
         } catch (Exception ex) {
             throw new CompraBoletoException("Error al cargar el catálogo de asientos: " + ex.getMessage());
+        }
+    }
+    
+    public List<EventoDTO> obtenerEventosCategoria(CategoriaDTO categoria) throws CompraBoletoException {
+        try{
+            return eventoBO.obtenerEventosPorCategoria(categoria);
+        } catch(Exception ex){
+            throw new CompraBoletoException("Error al cargar eventos por categoría: " + ex.getMessage());
+        }
+    }
+    
+    public boolean agregarReservacion(ReservacionDTO reservacion) throws CompraBoletoException {
+        try{
+            return reservacionBO.agregarReservacion(reservacion);
+        } catch(Exception ex){
+            throw new CompraBoletoException("Error al agregar la reservación: " + ex.getMessage());
+        }
+    }
+    
+    public List<ReservacionDTO> consultarReservacionUsuario(Long idUsuario) throws CompraBoletoException {
+        try {
+            return reservacionBO.obtenerReservacionesUsuario(idUsuario);
+        } catch(Exception ex){
+            throw new CompraBoletoException("Error al consultar las reservaciones: " + ex.getMessage());
+        }
+    }
+    
+    public List<CategoriaDTO> consultarCategorias() throws CompraBoletoException {
+        try{
+            return categoriaBO.consultarCategorias();
+        } catch(Exception ex){
+            throw new CompraBoletoException("Error al consultar las reservaciones: " + ex.getMessage());
         }
     }
 }

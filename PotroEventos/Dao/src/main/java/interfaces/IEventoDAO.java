@@ -1,5 +1,6 @@
 package interfaces;
 
+import Entitys.Categoria;
 import Entitys.Evento;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface IEventoDAO {
 
     Evento buscarPorId(Long id);
 
-    List<Evento> buscarTodos();
+    List<Evento> buscarTodosCategoria(Categoria categoria);
 
     Evento guardar(Evento evento);
 }

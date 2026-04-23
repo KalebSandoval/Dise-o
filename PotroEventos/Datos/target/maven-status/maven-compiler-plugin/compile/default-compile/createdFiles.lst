@@ -1,9 +1,11 @@
 Entitys\Boleto.class
+Entitys\Evento.class
+Entitys\Reservacion.class
+Entitys\Asiento.class
+Entitys\ENUMS\ReservacionEstado.class
 Entitys\ENUMS\EstadoBoleto.class
 Entitys\ENUMS\EstadoEvento.class
 Entitys\Categoria.class
-Entitys\Evento.class
-Entitys\Asiento.class
 Entitys\AsientoEvento.class
 Entitys\Seccion.class
 Entitys\ENUMS\CategoriaEvento.class
