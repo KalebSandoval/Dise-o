@@ -19,7 +19,7 @@ import fachada.InicioSesionFachada;
 import interfaces.IFachadaInicioSesion;
 import java.util.ArrayList;
 import java.util.List;
-
+import interfaces.IGestionUsuariosFachada;
 /**
  *
  * @author Aaron Burciaga - 262788

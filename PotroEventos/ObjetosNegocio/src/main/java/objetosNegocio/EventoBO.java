@@ -66,7 +66,7 @@ import java.util.List;
         eventoDTO.setUbicacion(eventoDTO.getUbicacion().trim().toLowerCase());
 
         // 4. Validar Categoría y Estado (Enums)
-        if (eventoDTO.getCategoriaDTO() == null || eventoDTO.getEstadoEvento() == null) {
+        if (eventoDTO.getCategoriaEvento() == null || eventoDTO.getEstadoEvento() == null) {
             return false;
         }
 

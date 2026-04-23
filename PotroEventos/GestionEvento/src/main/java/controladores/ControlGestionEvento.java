@@ -80,7 +80,7 @@ public class ControlGestionEvento {
     public List<EventoDTO> consultarEventosPorCategoria(CategoriaDTO categoria){
         List<EventoDTO> eventosCategoria = new ArrayList<>();
         for(EventoDTO e : listaEventos){
-            if(e.getCategoriaDTO().getNombreCategoria() == categoria.getNombreCategoria()){
+            if(e.getCategoriaEvento().getNombreCategoria() == categoria.getNombreCategoria()){
                 eventosCategoria.add(e);
             }
         }
