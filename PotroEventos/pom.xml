@@ -15,6 +15,7 @@
         <module>CompraBoleto</module>
         <module>Dao</module>
         <module>ObjetosNegocio</module>
+        <module>GestionUsuarios</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

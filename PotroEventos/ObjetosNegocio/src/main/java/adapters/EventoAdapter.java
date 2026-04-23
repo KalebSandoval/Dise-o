@@ -57,7 +57,7 @@ public class EventoAdapter {
 
         return new Evento(
                 dto.getIdEvento(),
-                convertirCategoriaEntidad(dto.getCategoriaDTO()),
+                convertirCategoriaEntidad(dto.getCategoriaEvento()),
                 dto.getNombreEvento(),
                 dto.getInformacionEvento(),
                 dto.getFechaHora(),

@@ -17,7 +17,7 @@ import dtos.LoginDTO;
 import dtos.UsuarioDTO;
 import java.util.ArrayList;
 import java.util.List;
-
+import interfaces.IGestionUsuariosFachada;
 /**
  *
  * @author Aaron Burciaga - 262788
