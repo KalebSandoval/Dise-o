@@ -28,7 +28,7 @@ public class PruebaStripe {
      */
     public static void main(String[] args) {
 
-        String apiKey = System.getenv("STRIPE_SECRET_KEY");
+        String apiKey = "Clave_Privada";
 
         if (apiKey == null || apiKey.isBlank()) {
             System.out.println("No se encontró la variable STRIPE_SECRET_KEY");
@@ -39,14 +39,14 @@ public class PruebaStripe {
 
         try {
             TarjetaDTO tarjeta = new TarjetaDTO(
-                    "4242424242424242",
+                    "4000000000009995",
                     12,
                     2030,
                     "123"
             );
 
             CobroDTO cobro = new CobroDTO(
-                    10000L,
+                    100000L,
                     "mxn",
                     "Compra de boleto"
             );

@@ -9,15 +9,21 @@ import dtos.AsientoDTO;
 import dtos.AsientoEventoDTO;
 import dtos.EventoDTO;
 import dtos.SeccionDTO;
-import java.awt.BorderLayout;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.Timer;
 import utilerias.BotonUtileria;
 
 /**
+ * Panel para consultar la información de un evento específico y seleccionar
+ * asientos gráficamente a través de PnlEstadio.
  *
  * @author Aaron Burciaga - 262788
  * @author Brian Sandoval - 262741
@@ -28,46 +34,115 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
 
     private ICoordinadorAplicacion coordinador;
     private EventoDTO evento;
+    private PnlEstadio estadioVisual;
 
+    //Variables para el Temporizador
+    private Timer temporizador;
+    private int tiempoRestante = 600; // 600 segundos
+
+    /**
+     * Constructor del panel de consulta de evento.
+     *
+     * @param coordinador Interfaz para la comunicación y navegación.
+     * @param evento El evento que se va a consultar.
+     */
     public PnlConsultarEvento(ICoordinadorAplicacion coordinador, EventoDTO evento) {
         this.coordinador = coordinador;
         this.evento = evento;
 
         initComponents();
 
-        // Estilización y Carga inicial
         BotonUtileria.estilizarBoton(btnVolver);
+        lblTemporizador.setText(String.format(formatoTemporizador(tiempoRestante)));
         cargarEstadio();
         cargarDatos();
+        actualizarEtiquetasAsientos(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        iniciarTemporizador();
+    }
+
+    private String formatoTemporizador(int tiempoRestante) {
+        int minutos = tiempoRestante / 60;
+        int segundos = tiempoRestante % 60;
+        return String.format("Tiempo : %02d:%02d", minutos, segundos);
+    }
+
+    /**
+     * Inicia el temporizador de 10 minutos.
+     */
+    private void iniciarTemporizador() {
+        if (temporizador == null) {
+            temporizador = new Timer(1000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    tiempoRestante--;
+                    lblTemporizador.setText(formatoTemporizador(tiempoRestante));
+
+                    if (tiempoRestante <= 0) {
+                        tiempoAgotado();
+                    }
+                }
+            });
+        }
+        if (!temporizador.isRunning()) {
+            temporizador.start();
+        }
+    }
+
+    /**
+     * Detiene el timer y lo devuelve a 10 minutos.
+     */
+    private void detenerYReiniciarTemporizador() {
+        if (temporizador != null) {
+            temporizador.stop();
+        }
+        tiempoRestante = 600;
+        lblTemporizador.setText("Tiempo : 10:00");
+    }
+
+    /**
+     * Lógica a ejecutar cuando los 10 minutos se terminan.
+     */
+    private void tiempoAgotado() {
+        detenerYReiniciarTemporizador();
+        JOptionPane.showMessageDialog(this,
+                "El tiempo de tu sesión ha expirado. Los asientos reservados se han liberado.",
+                "Tiempo Agotado", JOptionPane.WARNING_MESSAGE);
+
+        //AQUÍ ENTRA LA DAO (Vía Coordinador) - LIBERACIÓN MASIVA
+        // Si el tiempo se acaba, hay que enviar la orden a la base de datos para que
+        // todos los asientos que estaban en estado "RESERVADO" bajo esta sesión
+        // vuelvan a estar en "DISPONIBLE".
+        if (estadioVisual != null) {
+            estadioVisual.limpiarSeleccion();
+        }
     }
 
     private void cargarEstadio() {
         try {
-            // 1. Obtener datos
             Map<SeccionDTO, List<AsientoEventoDTO>> mapa = coordinador.obtenerMapaOcupacion(evento.getIdEvento());
             List<AsientoDTO> catalogo = coordinador.obtenerCatalogoAsientos();
 
-            // VALIDACIÓN: Si los datos fallan, no intentamos dibujar
             if (mapa == null || catalogo == null) {
                 System.err.println("Datos del estadio nulos");
                 return;
             }
 
-            // 2. Crear instancia
-            Pantallas.vistas.PnlEstadio estadioVisual = new Pantallas.vistas.PnlEstadio(mapa, catalogo);
+            estadioVisual = new PnlEstadio(mapa, catalogo, new PnlEstadio.IAsientosSeleccionadosListener() {
+                @Override
+                public void onSeleccionCambiada(List<SeccionDTO> secciones, List<AsientoDTO> asientosInfo, List<AsientoEventoDTO> asientosEventos) {
+                    actualizarEtiquetasAsientos(secciones, asientosInfo, asientosEventos);
+                }
+            });
 
-            // 3. Configurar Scroll
             JScrollPane scroll = new JScrollPane(estadioVisual);
             scroll.setBorder(null);
             scroll.setPreferredSize(new java.awt.Dimension(400, 400));
             scroll.getViewport().setBackground(new java.awt.Color(20, 20, 20));
 
-            // 4. Inyectar
             PnlEstadio.removeAll();
             PnlEstadio.setLayout(new java.awt.BorderLayout());
             PnlEstadio.add(scroll, java.awt.BorderLayout.CENTER);
 
-            // 5. Forzar renderizado
             PnlEstadio.revalidate();
             PnlEstadio.repaint();
 
@@ -76,12 +151,82 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Actualiza las etiquetas de UI dependiendo de si hay 0, 1 o múltiples
+     * asientos seleccionados.
+     */
+    private void actualizarEtiquetasAsientos(List<SeccionDTO> secciones, List<AsientoDTO> asientosInfo, List<AsientoEventoDTO> asientosEventos) {
+        // 1. Caso: Ningún asiento seleccionado
+        if (asientosEventos.isEmpty()) {
+            lblSeccion.setText("-");
+            lblFila.setText("-");
+            lblAsiento.setText("-");
+            lblPrecio.setText("$0.00");
+            txtTotal.setText("Total: $0.00");
+            return;
+        }
+
+        double totalPrecio = 0.0;
+
+        // Sumar el total general
+        for (int i = 0; i < asientosEventos.size(); i++) {
+            SeccionDTO seccionActual = secciones.get(i);
+            if (seccionActual != null) {
+                totalPrecio += seccionActual.getPrecioBase();
+            }
+        }
+
+        if (asientosEventos.size() == 1) {
+            // Mostrar información exacta para un solo asiento
+            SeccionDTO secUnica = secciones.get(0);
+            AsientoDTO asUnico = asientosInfo.get(0);
+
+            lblSeccion.setText(secUnica.getNombre());
+            lblFila.setText(asUnico.getFila());
+            lblAsiento.setText(String.valueOf(asUnico.getNumero()));
+            lblPrecio.setText(String.format("$%.2f", secUnica.getPrecioBase()));
+
+        } else {
+            // Mostrar información en forma de columnas alineadas para múltiples asientos
+            StringBuilder textoSecciones = new StringBuilder("<html>");
+            StringBuilder textoFilas = new StringBuilder("<html>");
+            StringBuilder textoAsientos = new StringBuilder("<html>");
+            StringBuilder textoPrecios = new StringBuilder("<html>");
+
+            for (int i = 0; i < asientosEventos.size(); i++) {
+                SeccionDTO seccionActual = secciones.get(i);
+                AsientoDTO asientoActual = asientosInfo.get(i);
+
+                if (seccionActual != null && asientoActual != null) {
+                    textoSecciones.append(seccionActual.getNombre()).append("<br>");
+                    textoFilas.append(asientoActual.getFila()).append("<br>");
+                    textoAsientos.append(asientoActual.getNumero()).append("<br>");
+                    textoPrecios.append(String.format("$%.2f", seccionActual.getPrecioBase())).append("<br>");
+                }
+            }
+
+            // Cerramos las etiquetas HTML
+            textoSecciones.append("</html>");
+            textoFilas.append("</html>");
+            textoAsientos.append("</html>");
+            textoPrecios.append("</html>");
+
+            // Asignamos las listas a cada etiqueta para que se vean como columnas
+            lblSeccion.setText(textoSecciones.toString());
+            lblFila.setText(textoFilas.toString());
+            lblAsiento.setText(textoAsientos.toString());
+            lblPrecio.setText(textoPrecios.toString());
+        }
+
+        // El total siempre se actualiza al final
+        txtTotal.setText(String.format("Total: $%.2f", totalPrecio));
+    }
+
     public void cargarDatos() {
         if (evento == null) {
             return;
         }
 
-        // Configuración de imagen con respaldo si el panel no ha renderizado dimensiones
         if (evento.getUrlImagen() != null && !evento.getUrlImagen().isEmpty()) {
             ImageIcon icono = new ImageIcon(evento.getUrlImagen());
             int ancho = getWidth() > 0 ? getWidth() : 306;
@@ -93,7 +238,6 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         }
 
         this.lblNombre.setText(evento.getNombreEvento());
-        // Uso de HTML para permitir saltos de línea automáticos en el JLabel
         this.txtInfo.setText("<html><body style='width: 250px'>" + evento.getInformacionEvento() + "</body></html>");
         this.lblFechaHora.setText(String.valueOf(evento.getFechaHora()));
         this.lblUbicacion.setText(evento.getUbicacion());
@@ -115,22 +259,22 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         lblFechaHora = new javax.swing.JLabel();
         lblUbicacion = new javax.swing.JLabel();
         btnVolver = new javax.swing.JButton();
-        jLabel6 = new javax.swing.JLabel();
+        lblTemporizador = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel8 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        jLabel9 = new javax.swing.JLabel();
+        lblSeccion = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
-        jLabel11 = new javax.swing.JLabel();
+        lblFila = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
+        lblAsiento = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
         jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        lblPrecio = new javax.swing.JLabel();
+        txtTotal = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
         PnlEstadio = new javax.swing.JPanel();
 
@@ -162,41 +306,48 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             }
         });
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setText("Tiempo : Ejemplo");
+        lblTemporizador.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblTemporizador.setText("Tiempo : Ejemplo");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel7.setText("Tu Sección");
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("Sección");
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        jLabel9.setText("seccion");
+        lblSeccion.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblSeccion.setText("seccion");
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setText("Fila");
 
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        jLabel11.setText("fila");
+        lblFila.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblFila.setText("fila");
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel12.setText("Asiento(s)");
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("Numero Asiento");
 
-        jLabel13.setText("asientos");
+        lblAsiento.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblAsiento.setText("asientos");
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel14.setText("Precio Unitario");
 
-        jLabel15.setText("precio");
+        lblPrecio.setText("precio");
 
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jTextField1.setText("Total: $");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtTotal.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        txtTotal.setText("Total: $");
+        txtTotal.setEnabled(false);
+        txtTotal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtTotalActionPerformed(evt);
             }
         });
 
@@ -220,37 +371,40 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jSeparator4)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(0, 2, Short.MAX_VALUE)
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGap(8, 8, 8)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel8)
-                                            .addComponent(jLabel9))
-                                        .addGap(27, 27, 27)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGap(14, 14, 14)
+                                                .addComponent(lblSeccion, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGap(8, 8, 8)
+                                                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(26, 26, 26)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel10)
-                                            .addComponent(jLabel11))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(lblFila, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel12)
-                                            .addComponent(jLabel13)))
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(lblAsiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                     .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(23, 23, 23))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel15)
+                            .addComponent(lblPrecio)
                             .addComponent(jLabel14))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField1))
+                            .addComponent(txtTotal))
                         .addContainerGap())))
         );
         jPanel2Layout.setVerticalGroup(
@@ -269,25 +423,25 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel9)
+                                .addComponent(lblSeccion)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 4, Short.MAX_VALUE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel11)
+                                .addComponent(lblFila)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addComponent(jSeparator2)
                     .addComponent(jSeparator3)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel13)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblAsiento)))
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel14)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel15)
+                .addComponent(lblPrecio)
                 .addGap(43, 43, 43)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton2)
                 .addContainerGap(9, Short.MAX_VALUE))
@@ -329,7 +483,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(55, 55, 55)
-                        .addComponent(jLabel6))
+                        .addComponent(lblTemporizador))
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, 0))
         );
@@ -345,7 +499,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                         .addGap(16, 16, 16))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblTemporizador, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addGap(9, 9, 9)
                                 .addComponent(lblNombre)))
@@ -375,9 +529,9 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTotalActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtTotalActionPerformed
 
     private void btnVolverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnVolverMouseClicked
         // TODO add your handling code here:
@@ -391,25 +545,25 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
     private javax.swing.JLabel iconEvento;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel lblAsiento;
     private javax.swing.JLabel lblFechaHora;
+    private javax.swing.JLabel lblFila;
     private javax.swing.JLabel lblNombre;
+    private javax.swing.JLabel lblPrecio;
+    private javax.swing.JLabel lblSeccion;
+    private javax.swing.JLabel lblTemporizador;
     private javax.swing.JLabel lblUbicacion;
     private javax.swing.JLabel txtInfo;
+    private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
 }

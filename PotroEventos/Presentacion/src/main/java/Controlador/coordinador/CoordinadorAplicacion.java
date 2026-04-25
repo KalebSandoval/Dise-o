@@ -7,7 +7,6 @@ import Pantallas.FrmPlantillaSistema;
 import Pantallas.FrmRegistrarse;
 import Pantallas.FrmDetallesCompra;
 import Pantallas.FrmRegistroItson;
-import Pantallas.vistas.PnlCategorias;
 import Pantallas.vistas.PnlConsultar;
 import Pantallas.vistas.PnlConsultarEvento;
 import Pantallas.vistas.PnlEventos;
@@ -33,6 +32,9 @@ import objetosNegocio.AsientoEventoBO;
 import objetosNegocio.SeccionBO;
 
 /**
+ * Clase que actúa como coordinador principal de la aplicación. Se encarga de
+ * gestionar la navegación entre las diferentes pantallas y de comunicar la capa
+ * de presentación (vistas) con la capa de negocio (fachadas y BOs).
  *
  * @author Aaron Burciaga - 262788
  * @author Brian Sandoval - 262741
@@ -42,11 +44,11 @@ import objetosNegocio.SeccionBO;
 public class CoordinadorAplicacion implements ICoordinadorAplicacion {
 
     private IFachadaInicioSesion logi = InicioSesionFachada.getInstance();
-
     private ICompraBoleto controlCompra = new CompraBoletoFachada();
     private SeccionBO seccionBO = SeccionBO.getInstance();
     private AsientoBO asientoBO = AsientoBO.getInstance();
     private AsientoEventoBO asientoEventoBO = AsientoEventoBO.getInstance();
+
     private FrmInicioSesion frmInicioSesion;
     private FrmRegistrarse frmRegistrarse;
     private FrmPago frmPago;
@@ -54,6 +56,11 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     private FrmDetallesCompra frmDetalles;
     private FrmRegistroItson frmRegistro;
 
+    /**
+     * Oculta todas las ventanas instanciadas actualmente en el sistema. Es
+     * utilizado como un paso previo antes de mostrar una nueva pantalla para
+     * asegurar que no queden ventanas superpuestas.
+     */
     private void ocultarTodo() {
         if (frmInicioSesion != null) {
             frmInicioSesion.setVisible(false);
@@ -69,9 +76,6 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         }
         if (frmRegistro != null) {
             frmRegistro.setVisible(false);
-        }
-        if (frmInicioSesion != null) {
-            frmInicioSesion.setVisible(false);
         }
     }
 
@@ -153,7 +157,7 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
 
     @Override
     public void finalizarCompra() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -168,22 +172,21 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
 
     @Override
     public void volverAEventos() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void mostrarConsultarEvento() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void volverAConsultar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public List<EventoDTO> consultarEventos(CategoriaDTO categoria
-    ) {
+    public List<EventoDTO> consultarEventos(CategoriaDTO categoria) {
         try {
             return controlCompra.obtenerEventosCategoria(categoria);
         } catch (CompraBoletoException ex) {
@@ -203,19 +206,17 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     }
 
     @Override
-    public UsuarioDTO iniciarSesion(String correo, String contrasenia
-    ) {
+    public UsuarioDTO iniciarSesion(String correo, String contrasenia) {
         return logi.verificarUsuario(correo, contrasenia);
     }
 
     @Override
-    public void setUsuarioSesion(UsuarioDTO usuario
-    ) {
+    public void setUsuarioSesion(UsuarioDTO usuario) {
     }
 
     @Override
     public UsuarioDTO getUsuarioSesion() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -243,25 +244,42 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         return false;
     }
 
+    /**
+     * Construye un mapa estructurado que relaciona cada sección del evento con
+     * la lista de sus asientos y su estado de ocupación respectivo. Utiliza el
+     * catálogo de asientos para saber a qué sección pertenece cada asiento y
+     * evitar duplicados en la interfaz gráfica.
+     *
+     * @param idEvento El identificador único del evento a consultar.
+     * @return Un mapa que vincula objetos SeccionDTO con listas de
+     * AsientoEventoDTO.
+     */
     @Override
     public Map<SeccionDTO, List<AsientoEventoDTO>> obtenerMapaOcupacion(Long idEvento) {
         try {
             List<SeccionDTO> secciones = seccionBO.consultarSeccionesPorEvento(idEvento);
             List<AsientoEventoDTO> ocupacion = asientoEventoBO.consultarEstadosPorEvento(idEvento);
 
+            // Obtenemos el catálogo general para verificar la pertenencia de los asientos
+            List<AsientoDTO> catalogo = obtenerCatalogoAsientos();
+
             Map<SeccionDTO, List<AsientoEventoDTO>> mapa = new HashMap<>();
 
             if (secciones != null && ocupacion != null) {
                 for (SeccionDTO seccion : secciones) {
-                    // Filtramos los asientos de ocupación que pertenecen a esta sección
-                    // Comparamos el nombre o el ID de la sección directamente
+
+                    // Filtramos los asientos del evento asegurándonos de que solo pasen
+                    // los que realmente pertenecen a la sección iterada actualmente.
                     List<AsientoEventoDTO> asientosDeEstaSeccion = ocupacion.stream()
                             .filter(ae -> {
-                                // Si tu AsientoEventoDTO tiene una referencia a la sección o 
-                                // si puedes obtener la sección desde el catálogo, úsala.
-                                // Por ahora, para que funcione, simplemente divide la ocupación 
-                                // equitativamente o por ID de sección si está disponible.
-                                return true; // PRUEBA: Deja que pasen todos para ver si se dibujan
+                                for (AsientoDTO asientoInfo : catalogo) {
+                                    // Verificamos si el asiento del evento coincide con el del catálogo
+                                    if (asientoInfo.getIdAsiento().equals(ae.getIdAsiento())) {
+                                        // Comparamos el ID de la sección del asiento contra el de la sección actual
+                                        return asientoInfo.getIdSeccion().equals(seccion.getIdSeccion());
+                                    }
+                                }
+                                return false;
                             })
                             .collect(Collectors.toList());
 
@@ -276,16 +294,21 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         }
     }
 
+    /**
+     * Obtiene el catálogo completo de asientos disponibles en el sistema. Sirve
+     * como base técnica para conocer la estructura de filas y números
+     * independientemente del evento.
+     *
+     * @return Una lista de objetos AsientoDTO. Retorna una lista vacía en caso
+     * de error.
+     */
     @Override
     public List<AsientoDTO> obtenerCatalogoAsientos() {
         try {
-            // 3. En tu fachada, obtenerAsientosPorSeccion(null) o el método que 
-            // mapeaste al catálogo completo en el controlador.
-            // Dado que tu fachada usa obtenerAsientosPorSeccion, llamamos a ese:
             return controlCompra.obtenerAsientosPorSeccion(null);
         } catch (CompraBoletoException ex) {
             System.err.println("Error al obtener catálogo de asientos: " + ex.getMessage());
-            return new java.util.ArrayList<>(); // Retornar lista vacía es más seguro que null
+            return new java.util.ArrayList<>();
         }
     }
 

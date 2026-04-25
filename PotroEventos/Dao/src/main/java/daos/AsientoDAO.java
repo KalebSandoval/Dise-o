@@ -35,7 +35,16 @@ public class AsientoDAO implements IAsientoDAO {
 
     @Override
     public List<Asiento> consultarPorSeccion(Long idSeccion) {
-        // Filtramos manualmente o devolvemos todos para la prueba
-        return consultarTodos();
+        List<Asiento> todosLosAsientos = consultarTodos();
+        List<Asiento> asientosFiltrados = new ArrayList<>();
+
+        // Recorremos todos los asientos y solo guardamos los que coincidan con el ID de la sección
+        for (Asiento asiento : todosLosAsientos) {
+            if (asiento.getSeccion().getIdSeccion().equals(idSeccion)) {
+                asientosFiltrados.add(asiento);
+            }
+        }
+
+        return asientosFiltrados;
     }
 }
