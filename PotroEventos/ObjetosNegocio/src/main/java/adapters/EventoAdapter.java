@@ -3,11 +3,14 @@ package adapters;
 import Entitys.Categoria;
 import Entitys.ENUMS.CategoriaEvento;
 import Entitys.ENUMS.EstadoEvento;
+import Entitys.ENUMS.TipoEventoP;
 import Entitys.Evento;
 import dtos.CategoriaDTO;
 import dtos.ENUMS.CategoriaEventoDTO;
 import dtos.ENUMS.EstadoEventoDTO;
+import dtos.ENUMS.TipoEventoN;
 import dtos.EventoDTO;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,16 +34,18 @@ public class EventoAdapter {
         if (evento == null) {
             return null;
         }
-
-        return new EventoDTO(
-                evento.getIdEvento(),
+  
+        return new EventoDTO(evento.getIdEvento(), 
                 convertirCategoriaADTO(evento.getCategoriaEvento()),
-                evento.getNombreEvento(),
-                evento.getInformacionEvento(),
-                evento.getFechaHora(),
-                evento.getUbicacion(),
-                convertirEstadoADTO(evento.getEstadoEvento()),
-                evento.getUrlImagen()
+                evento.getNombreEvento(), 
+                evento.getInformacionEvento(), 
+                evento.getFechaHora(), 
+                UbicacionAdapter.entidadADTO(evento.getUbicacion()), 
+                convertirEstadoADTO(evento.getEstadoEvento()), 
+                evento.getUrlImagen(), 
+                evento.isGratuito(), 
+                TipoEventoN.valueOf(evento.getTipoEvento().name()), 
+                evento.getDisponibilidad()
         );
     }
 
@@ -56,14 +61,17 @@ public class EventoAdapter {
         }
 
         return new Evento(
-                dto.getIdEvento(),
+                dto.getIdEvento(), 
                 convertirCategoriaEntidad(dto.getCategoriaEvento()),
-                dto.getNombreEvento(),
-                dto.getInformacionEvento(),
-                dto.getFechaHora(),
-                dto.getUbicacion(),
-                convertirEstadoAEntidad(dto.getEstadoEvento()),
-                dto.getUrlImagen()
+                dto.getNombreEvento(), 
+                dto.getInformacionEvento(), 
+                dto.getFechaHora(), 
+                UbicacionAdapter.dtoAEntidad(dto.getUbicacion()), 
+                convertirEstadoAEntidad(dto.getEstadoEvento()), 
+                dto.getUrlImagen(), 
+                dto.isGratuito(), 
+                TipoEventoP.valueOf(dto.getTipoEvento().name()), 
+                dto.getDisponibilidad()
         );
     }
     

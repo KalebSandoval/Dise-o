@@ -12,6 +12,7 @@ import dtos.SeccionDTO;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
     private ICoordinadorAplicacion coordinador;
     private EventoDTO evento;
     private PnlEstadio estadioVisual;
+    private List<AsientoEventoDTO> asientosSeleccionados = new ArrayList<>();
 
     //Variables para el Temporizador
     private Timer temporizador;
@@ -54,10 +56,62 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
 
         BotonUtileria.estilizarBoton(btnVolver);
         lblTemporizador.setText(String.format(formatoTemporizador(tiempoRestante)));
-        cargarEstadio();
+        
+        modoPantalla();
         cargarDatos();
-        actualizarEtiquetasAsientos(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        if (!evento.isGratuito()) {
+            cargarEstadio();
+            actualizarEtiquetasAsientos(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        }
         iniciarTemporizador();
+    }
+    
+    public void modoPantalla(){
+        if (evento.isGratuito()) {
+            lblTuSeccion.setText("Tus Boletos");
+            lblPrecio.setText("Cantidad:");
+            txtTotal.setText("Total: GRATIS");           
+            lblSecc.setText("");
+            lblSeccion.setText("");
+            jLabel10.setText("");
+            lblFila.setText("");
+            jLabel12.setText("");
+            lblAsiento.setText("");
+            jLabel14.setText("");
+            btnCant.setText("0");
+            btnCant.setEditable(false);
+            btnCant.setVisible(true);
+            btnMenos.setVisible(true);
+            btnMas.setVisible(true);   
+            btnMenos.setEnabled(true);
+            btnMas.setEnabled(true);
+            btnCant.setEnabled(true);
+            btnComprar.setText("Adquirir Boleto(s)");
+            PnlEstadio.setVisible(false); 
+            jSeparator1.setVisible(false);
+            jSeparator2.setVisible(false);
+            jSeparator3.setVisible(false);
+            jSeparator4.setVisible(false);
+        } else {
+            lblTuSeccion.setText("Tu Sección");
+            lblSecc.setText("Sección");
+            jLabel10.setText("Fila");
+            jLabel12.setText("Numero Asiento");
+            jLabel14.setText("Precio Unitario");
+            btnMenos.setVisible(false);
+            btnMas.setVisible(false);
+            btnCant.setVisible(false);
+            btnMenos.setEnabled(false);
+            btnMas.setEnabled(false);
+            btnCant.setEnabled(false);
+            btnCant.setEditable(false);
+            btnComprar.setText("Comprar Boleto(s)");
+            PnlEstadio.setVisible(true);
+            jSeparator1.setVisible(true);
+            jSeparator2.setVisible(true);
+            jSeparator3.setVisible(true);
+            jSeparator4.setVisible(true);
+        }
     }
 
     private String formatoTemporizador(int tiempoRestante) {
@@ -156,6 +210,13 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
      * asientos seleccionados.
      */
     private void actualizarEtiquetasAsientos(List<SeccionDTO> secciones, List<AsientoDTO> asientosInfo, List<AsientoEventoDTO> asientosEventos) {
+        // guardar los asientos
+        this.asientosSeleccionados = asientosEventos;
+        
+        if(evento == null  || evento.isGratuito()){
+            return;
+        }
+
         // 1. Caso: Ningún asiento seleccionado
         if (asientosEventos.isEmpty()) {
             lblSeccion.setText("-");
@@ -238,9 +299,21 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         }
 
         this.lblNombre.setText(evento.getNombreEvento());
-        this.txtInfo.setText("<html><body style='width: 250px'>" + evento.getInformacionEvento() + "</body></html>");
-        this.lblFechaHora.setText(String.valueOf(evento.getFechaHora()));
-        this.lblUbicacion.setText(evento.getUbicacion());
+        /*
+        esta línea es pendejo no hace nada xq lit no acomoda un orto el texto de
+        la descripción, pero en fin
+        
+        */
+        this.txtInfo.setText("<html><div style='width: 350px; text-align: justify;'>" + evento.getInformacionEvento() + "</div></html>");
+        /*
+        para que la fecha se vea kawaii
+        1. ocupamos el formateador de fechas
+        2. aplicarselo a la fecha
+        */
+        DateTimeFormatter formateadorFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formateadorHora = DateTimeFormatter.ofPattern("HH:mm");
+        this.lblFechaHora.setText(String.valueOf(evento.getFechaHora().format(formateadorFecha)) + " - " + String.valueOf(evento.getFechaHora().format(formateadorHora)));
+        this.lblUbicacion.setText(evento.getUbicacion().getNombre());
     }
 
     /**
@@ -255,15 +328,14 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         iconEvento = new javax.swing.JLabel();
         lblNombre = new javax.swing.JLabel();
-        txtInfo = new javax.swing.JLabel();
         lblFechaHora = new javax.swing.JLabel();
         lblUbicacion = new javax.swing.JLabel();
         btnVolver = new javax.swing.JButton();
         lblTemporizador = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
+        lblTuSeccion = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jLabel8 = new javax.swing.JLabel();
+        lblSecc = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         lblSeccion = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
@@ -275,8 +347,12 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         jLabel14 = new javax.swing.JLabel();
         lblPrecio = new javax.swing.JLabel();
         txtTotal = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        btnComprar = new javax.swing.JButton();
+        btnCant = new javax.swing.JTextField();
+        btnMenos = new javax.swing.JButton();
+        btnMas = new javax.swing.JButton();
         PnlEstadio = new javax.swing.JPanel();
+        txtInfo = new javax.swing.JLabel();
 
         setOpaque(false);
 
@@ -286,9 +362,6 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
 
         lblNombre.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblNombre.setText("Título Evento");
-
-        txtInfo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        txtInfo.setText("Información Evento");
 
         lblFechaHora.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblFechaHora.setText("Fecha y Hora");
@@ -309,12 +382,12 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         lblTemporizador.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblTemporizador.setText("Tiempo : Ejemplo");
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel7.setText("Tu Sección");
+        lblTuSeccion.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblTuSeccion.setText("Tu Sección");
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("Sección");
+        lblSecc.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lblSecc.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblSecc.setText("Sección");
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -351,19 +424,39 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(31, 92, 204));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Comprar Boleto(s)");
+        btnComprar.setBackground(new java.awt.Color(31, 92, 204));
+        btnComprar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnComprar.setForeground(new java.awt.Color(255, 255, 255));
+        btnComprar.setText("Comprar Boleto(s)");
+        btnComprar.setFocusPainted(false);
+        btnComprar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnComprarMouseClicked(evt);
+            }
+        });
+
+        btnMenos.setBackground(new java.awt.Color(102, 204, 255));
+        btnMenos.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnMenos.setText("-");
+        btnMenos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnMenosMouseClicked(evt);
+            }
+        });
+
+        btnMas.setBackground(new java.awt.Color(102, 204, 255));
+        btnMas.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnMas.setText("+");
+        btnMas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnMasMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel7)
-                .addGap(93, 93, 93))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -372,53 +465,64 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                             .addComponent(jSeparator4)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addGap(14, 14, 14)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(lblSeccion, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addGap(8, 8, 8)
-                                                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(lblSecc, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(lblFila, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(lblFila, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(lblAsiento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                            .addComponent(jLabel12)
+                                            .addComponent(lblAsiento, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(23, 23, 23))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnComprar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtTotal))
+                        .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblPrecio)
-                            .addComponent(jLabel14))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtTotal))
-                        .addContainerGap())))
+                            .addComponent(jLabel14)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(lblPrecio)
+                                .addGap(38, 38, 38)
+                                .addComponent(btnMenos, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCant, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnMas, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(89, Short.MAX_VALUE))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblTuSeccion)
+                .addGap(104, 104, 104))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel7)
+                .addComponent(lblTuSeccion)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
+                            .addComponent(lblSecc)
                             .addComponent(jLabel10))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -439,12 +543,16 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel14)
                 .addGap(18, 18, 18)
-                .addComponent(lblPrecio)
-                .addGap(43, 43, 43)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblPrecio)
+                    .addComponent(btnCant, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnMenos)
+                    .addComponent(btnMas))
+                .addGap(39, 39, 39)
                 .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addComponent(btnComprar)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         PnlEstadio.setBackground(new java.awt.Color(255, 255, 255));
@@ -453,12 +561,15 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         PnlEstadio.setLayout(PnlEstadioLayout);
         PnlEstadioLayout.setHorizontalGroup(
             PnlEstadioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 327, Short.MAX_VALUE)
+            .addGap(0, 307, Short.MAX_VALUE)
         );
         PnlEstadioLayout.setVerticalGroup(
             PnlEstadioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 291, Short.MAX_VALUE)
         );
+
+        txtInfo.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        txtInfo.setText("Información Evento");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -467,16 +578,20 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(iconEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(iconEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtInfo, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
                             .addComponent(lblNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblFechaHora, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblUbicacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblFechaHora, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblUbicacion))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(PnlEstadio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(69, 69, 69)))
@@ -498,23 +613,23 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                         .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(16, 16, 16))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(lblTemporizador, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addGap(9, 9, 9)
-                                .addComponent(lblNombre)))
-                        .addGap(18, 18, 18)
-                        .addComponent(txtInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblTemporizador, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblNombre))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblFechaHora)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(lblFechaHora)
-                                .addGap(18, 18, 18)
+                                .addGap(26, 26, 26)
+                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblUbicacion)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(PnlEstadio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(12, 12, 12))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                .addGap(12, 12, 12))))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -538,17 +653,70 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         coordinador.mostrarInicio();
     }//GEN-LAST:event_btnVolverMouseClicked
 
+    private void btnComprarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnComprarMouseClicked
+        // TODO add your handling code here:
+        if (evento.isGratuito()) {
+            int boletosAAdquirir = Integer.parseInt(btnCant.getText());
+            if (boletosAAdquirir == 0) {
+                JOptionPane.showMessageDialog(this, "Selecciona al menos 1 boleto.");
+                return;
+            }
+        } else {
+            if(asientosSeleccionados == null || asientosSeleccionados.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Selecciona al menos un asiento en el mapa.");
+                return;
+            }
+        }
+        // -> tengo q ver qp para crear las reservaciones y mandarlas al método de pago (en caso de ocuparse)
+    }//GEN-LAST:event_btnComprarMouseClicked
+
+    private void btnMenosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMenosMouseClicked
+        // TODO add your handling code here:
+        try {
+            int cantidadActual = Integer.parseInt(btnCant.getText());
+
+            if (cantidadActual > 0) {
+                cantidadActual--;
+                btnCant.setText(String.valueOf(cantidadActual));
+            }
+        } catch (NumberFormatException ex) {
+            btnCant.setText("0"); 
+        }
+        
+        
+    }//GEN-LAST:event_btnMenosMouseClicked
+
+    private void btnMasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMasMouseClicked
+        // TODO add your handling code here:
+        try {
+            int cantidadActual = Integer.parseInt(btnCant.getText());
+            int limiteBoletos = evento.getDisponibilidad(); 
+
+            if (cantidadActual < limiteBoletos) {
+                cantidadActual++;
+                btnCant.setText(String.valueOf(cantidadActual));
+            } else {
+                JOptionPane.showMessageDialog(PnlConsultarEvento.this,
+                        "Solo puedes adquirir hasta " + limiteBoletos + " boletos por transacción.",
+                        "Límite alcanzado", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (NumberFormatException ex) {
+            btnCant.setText("1");
+        }
+    }//GEN-LAST:event_btnMasMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel PnlEstadio;
+    private javax.swing.JTextField btnCant;
+    private javax.swing.JButton btnComprar;
+    private javax.swing.JButton btnMas;
+    private javax.swing.JButton btnMenos;
     private javax.swing.JButton btnVolver;
     private javax.swing.JLabel iconEvento;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSeparator jSeparator1;
@@ -560,8 +728,10 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
     private javax.swing.JLabel lblFila;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblPrecio;
+    private javax.swing.JLabel lblSecc;
     private javax.swing.JLabel lblSeccion;
     private javax.swing.JLabel lblTemporizador;
+    private javax.swing.JLabel lblTuSeccion;
     private javax.swing.JLabel lblUbicacion;
     private javax.swing.JLabel txtInfo;
     private javax.swing.JTextField txtTotal;

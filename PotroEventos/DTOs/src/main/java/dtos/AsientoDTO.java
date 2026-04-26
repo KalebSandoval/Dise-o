@@ -12,6 +12,9 @@ public class AsientoDTO {
     private Long idAsiento;
     private String fila;
     private Integer numero;
+    /*
+    igual, no le muevo pero es mejor que tenga su objeto completo
+    */
     private Long idseccion;
 
     public AsientoDTO() {

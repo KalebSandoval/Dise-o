@@ -3,11 +3,14 @@ Entitys\Evento.class
 Entitys\Reservacion.class
 Entitys\Asiento.class
 Entitys\ENUMS\ReservacionEstado.class
+Entitys\Ubicacion.class
 Entitys\ENUMS\EstadoBoleto.class
 Entitys\ENUMS\EstadoEvento.class
 Entitys\Categoria.class
 Entitys\AsientoEvento.class
+Entitys\ENUMS\TipoUbicacionP.class
 Entitys\Seccion.class
 Entitys\ENUMS\CategoriaEvento.class
+Entitys\ENUMS\TipoEventoP.class
 Entitys\ENUMS\EstadoAsiento.class
 Entitys\Usuario.class

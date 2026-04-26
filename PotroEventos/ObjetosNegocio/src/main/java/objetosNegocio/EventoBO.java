@@ -64,13 +64,13 @@ public class EventoBO implements IEventoBO {
         eventoDTO.setNombreEvento(eventoDTO.getNombreEvento().trim().toLowerCase());
 
         // 3. Validar Ubicación
-        if (eventoDTO.getUbicacion() == null || eventoDTO.getUbicacion().isBlank()) {
+        if (eventoDTO.getUbicacion() == null) {
             return false;
         }
-        eventoDTO.setUbicacion(eventoDTO.getUbicacion().trim().toLowerCase());
+        eventoDTO.setUbicacion(eventoDTO.getUbicacion());
 
         // 4. Validar Categoría y Estado (Enums)
-        if (eventoDTO.getCategoriaEvento() == null || eventoDTO.getEstadoEvento() == null) {
+        if (eventoDTO.getCategoriaEvento() == null || eventoDTO.getEstadoEvento() == null || eventoDTO.getTipoEvento() == null) {
             return false;
         }
 
@@ -82,6 +82,10 @@ public class EventoBO implements IEventoBO {
         // 6. Formatear campos opcionales (Información)
         if (eventoDTO.getInformacionEvento() != null) {
             eventoDTO.setInformacionEvento(eventoDTO.getInformacionEvento().trim().toLowerCase());
+        }
+        
+        if(eventoDTO.getDisponibilidad() == null || eventoDTO.getDisponibilidad() < 0){
+            return false;
         }
         
         return true; // Si pasó todos los filtros

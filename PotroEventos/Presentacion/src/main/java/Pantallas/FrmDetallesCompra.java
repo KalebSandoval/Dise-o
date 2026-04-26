@@ -67,7 +67,7 @@ public class FrmDetallesCompra extends javax.swing.JFrame {
         */
         this.txtAsientos.setText("10, 11, 12");
         this.txtFechaHora.setText(String.valueOf(reservacion.getBoleto().getEvento().getFechaHora()));
-        this.txtUbicacion.setText(reservacion.getBoleto().getEvento().getUbicacion());
+        this.txtUbicacion.setText(reservacion.getBoleto().getEvento().getUbicacion().getNombre());
         this.txtHorasAntes.setText(String.valueOf(reservacion.getBoleto().getEvento().getFechaHora().minusHours(48)));
     }
 

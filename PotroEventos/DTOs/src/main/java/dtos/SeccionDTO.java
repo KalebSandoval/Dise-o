@@ -1,5 +1,7 @@
 package dtos;
 
+import java.util.List;
+
 /**
  *
  * @author Aaron Burciaga - 262788
@@ -13,7 +15,15 @@ public class SeccionDTO {
     private String nombre;
     private Integer capacidad;
     private Double precioBase;
-
+    /*
+    no lo quitaré porque no sé dónde se use ahorita mismo,
+    pero estoy pensando que funciona mejor si cada seccion tiene su ubicación, y 
+    cada asiento tiene su seccion, en vez de tener que la ubicación almacene una
+    lista de secciones y la sección una lista de asientos.
+    */
+    private List<AsientoDTO> asientos;
+    private UbicacionDTO ubicacion;
+    
     public SeccionDTO() {
     }
 

@@ -10,6 +10,7 @@ import dtos.ReservacionDTO;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.Panel;
+import java.time.format.DateTimeFormatter;
 import javax.swing.ImageIcon;
 
 /**
@@ -69,8 +70,10 @@ public class PnlEvento extends Panel {
         iconEvento.setIcon(new ImageIcon(img));
         iconEvento.setText("");
         this.lblNombre.setText(evento.getNombreEvento());
-        this.lblFechaHora.setText(String.valueOf(evento.getFechaHora()));
-        this.lblUbicacion.setText(evento.getUbicacion());
+        DateTimeFormatter formateadorFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formateadorHora = DateTimeFormatter.ofPattern("HH:mm");
+        this.lblFechaHora.setText(String.valueOf(evento.getFechaHora().format(formateadorFecha)) + " - " + String.valueOf(evento.getFechaHora().format(formateadorHora)));
+        this.lblUbicacion.setText(evento.getUbicacion().getNombre());
     }
     
     private void configurarModo() {

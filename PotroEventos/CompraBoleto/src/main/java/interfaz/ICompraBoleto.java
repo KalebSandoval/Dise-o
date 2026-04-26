@@ -60,12 +60,21 @@ public interface ICompraBoleto {
      */
     List<AsientoEventoDTO> obtenerEstadoAsientosPorEvento(Long idEvento) throws CompraBoletoException;
 
+    /*
+    esto se va al subsistema d gestion eventos
+    */
     List<EventoDTO> obtenerEventosCategoria(CategoriaDTO categoria) throws CompraBoletoException;
 
     boolean agregarReservacion(ReservacionDTO reservacion) throws CompraBoletoException;
 
+    /*
+    esto debería estar en el subsistema de usuarios (porque de reservas no hay)
+    */
     List<ReservacionDTO> obtenerReservacionesUsuario(Long idUsuario) throws CompraBoletoException;
 
+    /*
+    debería irse a eventos?
+    */
     List<CategoriaDTO> obtenerCategorias() throws CompraBoletoException;
 
     List<AsientoDTO> obtenerCatalogoAsientos() throws CompraBoletoException;

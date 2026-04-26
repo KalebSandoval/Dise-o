@@ -2,6 +2,7 @@ package Entitys;
 
 import Entitys.ENUMS.CategoriaEvento;
 import Entitys.ENUMS.EstadoEvento;
+import Entitys.ENUMS.TipoEventoP;
 import java.time.LocalDateTime;
 
 /**
@@ -18,14 +19,17 @@ public class Evento {
     private String nombreEvento;
     private String informacionEvento;
     private LocalDateTime fechaHora;
-    private String ubicacion;
+    private Ubicacion ubicacion;
     private EstadoEvento estadoEvento;
     private String urlImagen;
+    private boolean gratuito;
+    private TipoEventoP tipoEvento;
+    private Integer disponibilidad;
 
     public Evento() {
     }
 
-    public Evento(Long idEvento, Categoria categoriaEvento, String nombreEvento, String informacionEvento, LocalDateTime fechaHora, String ubicacion, EstadoEvento estadoEvento, String urlImagen) {
+    public Evento(Long idEvento, Categoria categoriaEvento, String nombreEvento, String informacionEvento, LocalDateTime fechaHora, Ubicacion ubicacion, EstadoEvento estadoEvento, String urlImagen, boolean gratuito, TipoEventoP tipoEvento, Integer disponibilidad) {
         this.idEvento = idEvento;
         this.categoriaEvento = categoriaEvento;
         this.nombreEvento = nombreEvento;
@@ -34,9 +38,12 @@ public class Evento {
         this.ubicacion = ubicacion;
         this.estadoEvento = estadoEvento;
         this.urlImagen = urlImagen;
+        this.gratuito = gratuito;
+        this.tipoEvento = tipoEvento;
+        this.disponibilidad = disponibilidad;
     }
 
-    public Evento(Categoria categoriaEvento, String nombreEvento, String informacionEvento, LocalDateTime fechaHora, String ubicacion, EstadoEvento estadoEvento, String urlImagen) {
+    public Evento(Categoria categoriaEvento, String nombreEvento, String informacionEvento, LocalDateTime fechaHora, Ubicacion ubicacion, EstadoEvento estadoEvento, String urlImagen, boolean gratuito, TipoEventoP tipoEvento, Integer disponibilidad) {
         this.categoriaEvento = categoriaEvento;
         this.nombreEvento = nombreEvento;
         this.informacionEvento = informacionEvento;
@@ -44,6 +51,9 @@ public class Evento {
         this.ubicacion = ubicacion;
         this.estadoEvento = estadoEvento;
         this.urlImagen = urlImagen;
+        this.gratuito = gratuito;
+        this.tipoEvento = tipoEvento;
+        this.disponibilidad = disponibilidad;
     }
 
     public Long getIdEvento() {
@@ -86,11 +96,11 @@ public class Evento {
         this.fechaHora = fechaHora;
     }
 
-    public String getUbicacion() {
+    public Ubicacion getUbicacion() {
         return ubicacion;
     }
 
-    public void setUbicacion(String ubicacion) {
+    public void setUbicacion(Ubicacion ubicacion) {
         this.ubicacion = ubicacion;
     }
 
@@ -110,9 +120,28 @@ public class Evento {
         this.urlImagen = urlImagen;
     }
 
-    @Override
-    public String toString() {
-        return "Evento{" + "idEvento=" + idEvento + ", categoriaEvento=" + categoriaEvento + ", nombreEvento=" + nombreEvento + ", informacionEvento=" + informacionEvento + ", fechaHora=" + fechaHora + ", ubicacion=" + ubicacion + ", estadoEvento=" + estadoEvento + ", urlImagen=" + urlImagen + '}';
+    public boolean isGratuito() {
+        return gratuito;
+    }
+
+    public void setGratuito(boolean gratuito) {
+        this.gratuito = gratuito;
+    }
+
+    public TipoEventoP getTipoEvento() {
+        return tipoEvento;
+    }
+
+    public void setTipoEvento(TipoEventoP tipoEvento) {
+        this.tipoEvento = tipoEvento;
+    }
+
+    public Integer getDisponibilidad() {
+        return disponibilidad;
+    }
+
+    public void setDisponibilidad(Integer disponibilidad) {
+        this.disponibilidad = disponibilidad;
     }
 
 }
