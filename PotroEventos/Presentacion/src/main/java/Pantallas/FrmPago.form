@@ -80,7 +80,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                       <Component id="textPotroEventos" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="293" max="32767" attributes="0"/>
+                      <EmptySpace pref="292" max="32767" attributes="0"/>
                   </Group>
                   <Component id="jPanelAzulOscuro" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -326,7 +326,7 @@
                         <Property name="horizontalAlignment" type="int" value="0"/>
                         <Property name="text" type="java.lang.String" value="Pagar"/>
                         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-                          <Color id="Cursor de Mano"/>
+                          <Color id="Default Cursor"/>
                         </Property>
                       </Properties>
                     </Component>
@@ -338,6 +338,9 @@
                       <Color blue="f3" green="72" red="2c" type="rgb"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnVolverMouseClicked"/>
+                  </Events>
 
                   <Layout>
                     <DimensionLayout dim="0">
@@ -363,9 +366,12 @@
                         <Property name="horizontalAlignment" type="int" value="0"/>
                         <Property name="text" type="java.lang.String" value="Volver"/>
                         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-                          <Color id="Cursor de Mano"/>
+                          <Color id="Default Cursor"/>
                         </Property>
                       </Properties>
+                      <Events>
+                        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jLabel2MouseClicked"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>

@@ -88,7 +88,7 @@ public class FrmPago extends javax.swing.JFrame {
             .addGroup(jPanelAzulLayout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addComponent(textPotroEventos)
-                .addContainerGap(293, Short.MAX_VALUE))
+                .addContainerGap(292, Short.MAX_VALUE))
             .addComponent(jPanelAzulOscuro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanelAzulLayout.setVerticalGroup(
@@ -173,7 +173,7 @@ public class FrmPago extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Pagar");
-        jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         javax.swing.GroupLayout btnPagarLayout = new javax.swing.GroupLayout(btnPagar);
         btnPagar.setLayout(btnPagarLayout);
@@ -187,12 +187,22 @@ public class FrmPago extends javax.swing.JFrame {
         );
 
         btnVolver.setBackground(new java.awt.Color(44, 114, 243));
+        btnVolver.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnVolverMouseClicked(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Volver");
-        jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout btnVolverLayout = new javax.swing.GroupLayout(btnVolver);
         btnVolver.setLayout(btnVolverLayout);
@@ -362,6 +372,14 @@ public class FrmPago extends javax.swing.JFrame {
 
         txtCVV.setText(texto);
     }//GEN-LAST:event_txtCVVKeyReleased
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+        coordinador.volverAConsultarEvento();
+    }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void btnVolverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnVolverMouseClicked
+        coordinador.volverAConsultarEvento();
+    }//GEN-LAST:event_btnVolverMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -162,9 +162,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
      */
     private void tiempoAgotado() {
         detenerYReiniciarTemporizador();
-        JOptionPane.showMessageDialog(this,
-                "El tiempo de tu sesión ha expirado. Los asientos reservados se han liberado.",
-                "Tiempo Agotado", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, "El tiempo de tu sesión ha expirado. Los asientos reservados se han liberado.", "Tiempo Agotado", JOptionPane.WARNING_MESSAGE);
 
         //AQUÍ ENTRA LA DAO (Vía Coordinador) - LIBERACIÓN MASIVA
         // Si el tiempo se acaba, hay que enviar la orden a la base de datos para que
@@ -173,6 +171,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         if (estadioVisual != null) {
             estadioVisual.limpiarSeleccion();
         }
+        coordinador.mostrarInicio();
     }
 
     private void cargarEstadio() {

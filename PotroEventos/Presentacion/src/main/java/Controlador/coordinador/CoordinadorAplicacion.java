@@ -10,7 +10,6 @@ import Pantallas.FrmRegistroItson;
 import Pantallas.vistas.PnlConsultar;
 import Pantallas.vistas.PnlConsultarEvento;
 import Pantallas.vistas.PnlEventos;
-import control.ControlPago;
 import dtos.AsientoDTO;
 import dtos.AsientoEventoDTO;
 import dtos.CategoriaDTO;
@@ -183,7 +182,7 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
 
     @Override
     public void volverAEventos() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
 
     @Override
