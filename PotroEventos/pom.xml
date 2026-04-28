@@ -9,14 +9,14 @@
         <module>Presentacion</module>
         <module>Datos</module>
         <module>DTOs</module>
-        <module>Pago</module>
-        <module>GestionEvento</module>
         <module>InicioSesion</module>
-        <module>CompraBoleto</module>
         <module>Dao</module>
         <module>ObjetosNegocio</module>
-        <module>GestionUsuarios</module>
         <module>Infraestructura</module>
+        <module>SubsistemaGestionEvento</module>
+        <module>SubsistemaPago</module>
+        <module>SubsistemaCompraBoleto</module>
+        <module>SubsistemaGestionUsuarios</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

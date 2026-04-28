@@ -6,12 +6,12 @@
         <artifactId>PotroEventos</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>CompraBoleto</artifactId>
+    <artifactId>SubsistemaGestionEvento</artifactId>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>dtos</artifactId>
+            <artifactId>DTOs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -22,6 +22,7 @@
     </dependencies>
     <properties>
         <maven.compiler.release>24</maven.compiler.release>
-        <exec.mainClass>com.mycompany.compraboleto.CompraBoleto</exec.mainClass>
+        <exec.mainClass>com.mycompany.gestionevento.GestionEvento</exec.mainClass>
     </properties>
+    <name>SubsistemaGestionEvento</name>
 </project>

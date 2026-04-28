@@ -10,3 +10,7 @@
 /PotroEventos/CompraBoleto/target/
 /PotroEventos/GestionUsuarios/target/
 /PotroEventos/Infraestructura/target/
+/PotroEventos/SubsistemaGestionEvento/target/
+/PotroEventos/SubsistemaPago/target/
+/PotroEventos/SubsistemaCompraBoleto/target/
+/PotroEventos/SubsistemaGestionUsuarios/target/
