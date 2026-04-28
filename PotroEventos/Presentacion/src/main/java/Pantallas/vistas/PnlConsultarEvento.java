@@ -5,7 +5,6 @@
 package Pantallas.vistas;
 
 import Controlador.interfaz.ICoordinadorAplicacion;
-import Observer.IAsientosSeleccionadosListener;
 import dtos.AsientoDTO;
 import dtos.AsientoEventoDTO;
 import dtos.EventoDTO;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import utilerias.BotonUtileria;
 
@@ -42,6 +40,11 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
     //Variables para el Temporizador
     private Timer temporizador;
     private int tiempoRestante = 600; // 600 segundos
+
+    /**
+     * Guarda el total actual de la compra.
+     */
+    private Long totalCompra = 0L;
 
     /**
      * Constructor del panel de consulta de evento.
@@ -203,80 +206,102 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
 
     /**
      * Actualiza las etiquetas de UI dependiendo de si hay 0, 1 o múltiples
-     * asientos seleccionados.
+     * asientos seleccionados y calcula el total general.
+     *
+     * @param secciones Lista de secciones correspondientes a los asientos.
+     * @param asientosInfo Lista con la información técnica de los asientos.
+     * @param asientosEventos Lista de asientos seleccionados del evento.
      */
-    private void actualizarEtiquetasAsientos(List<SeccionDTO> secciones, List<AsientoDTO> asientosInfo, List<AsientoEventoDTO> asientosEventos) {
-        // guardar los asientos
+    private void actualizarEtiquetasAsientos(
+            List<SeccionDTO> secciones,
+            List<AsientoDTO> asientosInfo,
+            List<AsientoEventoDTO> asientosEventos
+    ) {
+
+        // Guardar los asientos seleccionados
         this.asientosSeleccionados = asientosEventos;
 
         if (evento == null || evento.isGratuito()) {
+            totalCompra = 0L;
             return;
         }
 
-        // 1. Caso: Ningún asiento seleccionado
-        if (asientosEventos.isEmpty()) {
+        // Caso: ningún asiento seleccionado
+        if (asientosEventos == null || asientosEventos.isEmpty()) {
             lblSeccion.setText("-");
             lblFila.setText("-");
             lblAsiento.setText("-");
             lblPrecio.setText("$0.00");
             txtTotal.setText("Total: $0.00");
+            totalCompra = 0L;
             return;
         }
 
-        double totalPrecio = 0.0;
+        // Calcular total general
+        totalCompra = calcularTotalCompra(secciones);
 
-        // Sumar el total general
-        for (int i = 0; i < asientosEventos.size(); i++) {
-            SeccionDTO seccionActual = secciones.get(i);
-            if (seccionActual != null) {
-                totalPrecio += seccionActual.getPrecioBase();
-            }
-        }
-
+        // Caso: un solo asiento
         if (asientosEventos.size() == 1) {
-            // Mostrar información exacta para un solo asiento
-            SeccionDTO secUnica = secciones.get(0);
-            AsientoDTO asUnico = asientosInfo.get(0);
+            SeccionDTO seccion = secciones.get(0);
+            AsientoDTO asiento = asientosInfo.get(0);
 
-            lblSeccion.setText(secUnica.getNombre());
-            lblFila.setText(asUnico.getFila());
-            lblAsiento.setText(String.valueOf(asUnico.getNumero()));
-            lblPrecio.setText(String.format("$%.2f", secUnica.getPrecioBase()));
-
+            lblSeccion.setText(seccion.getNombre());
+            lblFila.setText(asiento.getFila());
+            lblAsiento.setText(String.valueOf(asiento.getNumero()));
+            lblPrecio.setText(String.format("$%.2f", seccion.getPrecioBase() / 100.0));
         } else {
-            // Mostrar información en forma de columnas alineadas para múltiples asientos
+
+            // Caso: múltiples asientos
             StringBuilder textoSecciones = new StringBuilder("<html>");
             StringBuilder textoFilas = new StringBuilder("<html>");
             StringBuilder textoAsientos = new StringBuilder("<html>");
             StringBuilder textoPrecios = new StringBuilder("<html>");
 
             for (int i = 0; i < asientosEventos.size(); i++) {
-                SeccionDTO seccionActual = secciones.get(i);
-                AsientoDTO asientoActual = asientosInfo.get(i);
+                SeccionDTO seccion = secciones.get(i);
+                AsientoDTO asiento = asientosInfo.get(i);
 
-                if (seccionActual != null && asientoActual != null) {
-                    textoSecciones.append(seccionActual.getNombre()).append("<br>");
-                    textoFilas.append(asientoActual.getFila()).append("<br>");
-                    textoAsientos.append(asientoActual.getNumero()).append("<br>");
-                    textoPrecios.append(String.format("$%.2f", seccionActual.getPrecioBase())).append("<br>");
+                if (seccion != null && asiento != null) {
+                    textoSecciones.append(seccion.getNombre()).append("<br>");
+                    textoFilas.append(asiento.getFila()).append("<br>");
+                    textoAsientos.append(asiento.getNumero()).append("<br>");
+                    textoPrecios.append(
+                            String.format("$%.2f", seccion.getPrecioBase() / 100.0)
+                    ).append("<br>");
                 }
             }
 
-            // Cerramos las etiquetas HTML
             textoSecciones.append("</html>");
             textoFilas.append("</html>");
             textoAsientos.append("</html>");
             textoPrecios.append("</html>");
 
-            // Asignamos las listas a cada etiqueta para que se vean como columnas
             lblSeccion.setText(textoSecciones.toString());
             lblFila.setText(textoFilas.toString());
             lblAsiento.setText(textoAsientos.toString());
             lblPrecio.setText(textoPrecios.toString());
         }
 
-        // El total siempre se actualiza al final
-        txtTotal.setText(String.format("Total: $%.2f", totalPrecio));
+        txtTotal.setText(String.format("Total: $%.2f", totalCompra / 100.0));
+    }
+
+    /**
+     * Calcula el total de la compra sumando el precio base de cada sección
+     * seleccionada.
+     *
+     * @param secciones Lista de secciones seleccionadas.
+     * @return Total acumulado de la compra.
+     */
+    private Long calcularTotalCompra(List<SeccionDTO> secciones) {
+        Long total = 0L;
+
+        for (SeccionDTO seccion : secciones) {
+            if (seccion != null) {
+                total += seccion.getPrecioBase();
+            }
+        }
+
+        return total;
     }
 
     public void cargarDatos() {
@@ -430,6 +455,11 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                 btnComprarMouseClicked(evt);
             }
         });
+        btnComprar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnComprarActionPerformed(evt);
+            }
+        });
 
         btnMenos.setBackground(new java.awt.Color(102, 204, 255));
         btnMenos.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -464,12 +494,8 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(lblSeccion, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(lblSecc, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addComponent(lblSeccion, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblSecc, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -662,6 +688,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Selecciona al menos un asiento en el mapa.");
                 return;
             }
+
         }
         // -> tengo q ver qp para crear las reservaciones y mandarlas al método de pago (en caso de ocuparse)
     }//GEN-LAST:event_btnComprarMouseClicked
@@ -700,6 +727,10 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             btnCant.setText("1");
         }
     }//GEN-LAST:event_btnMasMouseClicked
+
+    private void btnComprarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComprarActionPerformed
+        coordinador.venderAsientos(asientosSeleccionados, totalCompra, evento.isGratuito());
+    }//GEN-LAST:event_btnComprarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

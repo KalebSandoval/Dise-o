@@ -81,4 +81,17 @@ public class AsientoEventoBO implements IAsientoEventoBO {
             throw new NegocioException("No fue posible liberar el asiento");
         }
     }
+
+    @Override
+    public boolean venderAsiento(Long idAsiento) throws NegocioException {
+        if (idAsiento == null || idAsiento <= 0) {
+            throw new NegocioException("ID de asientoEvento no válido.");
+        }
+
+        try {
+            return asientoEventoDAO.venderAsiento(idAsiento);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No fue posible liberar el asiento");
+        }
+    }
 }

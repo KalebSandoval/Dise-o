@@ -24,21 +24,21 @@ public class SeccionDAO implements ISeccionDAO {
         Seccion vip = new Seccion();
         vip.setIdSeccion(1L);
         vip.setNombre("VIP");
-        vip.setPrecioBase(1500.0);
+        vip.setPrecioBase(1500000L);
         secciones.add(vip);
 
         // Sección 2
         Seccion platea = new Seccion();
         platea.setIdSeccion(2L);
         platea.setNombre("PLATEA");
-        platea.setPrecioBase(800.0);
+        platea.setPrecioBase(80000L);
         secciones.add(platea);
 
         // Sección 3
         Seccion general = new Seccion();
         general.setIdSeccion(3L);
         general.setNombre("GENERAL");
-        general.setPrecioBase(400.0);
+        general.setPrecioBase(400000L);
         secciones.add(general);
 
         return secciones;

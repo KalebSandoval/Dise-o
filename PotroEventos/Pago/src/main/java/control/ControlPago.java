@@ -1,8 +1,10 @@
 package control;
 
+import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
 import dtos.CobroDTO;
+import dtos.StripeChargeDTO;
 import dtos.TarjetaDTO;
 import excepciones.PagoException;
 import java.util.HashMap;
@@ -37,14 +39,17 @@ public class ControlPago {
      */
     private static ControlPago instancia;
 
+    private static final String STRIPE_SECRET_KEY = "Aqui va la clave privada";
+
     /**
-     * Constructor privado para evitar instanciación externa.
+     * Constructor privado.
      */
     private ControlPago() {
+        Stripe.apiKey = STRIPE_SECRET_KEY;
     }
 
     /**
-     * Obtiene la instancia única de ControlPago.
+     * Obtiene la instancia única.
      *
      * @return instancia única
      */
@@ -56,51 +61,50 @@ public class ControlPago {
     }
 
     /**
-     * Procesa un pago usando datos de tarjeta y cobro.
+     * Procesa un pago usando tarjeta y cobro.
      *
-     * @param tarjetaDTO datos de la tarjeta
+     * @param tarjetaDTO datos de tarjeta
      * @param cobroDTO datos del cobro
-     * @return true si el pago fue exitoso
-     * @throws PagoException si ocurre un error
+     * @return true si fue exitoso
+     * @throws PagoException si ocurre error
      */
     public boolean realizarPago(TarjetaDTO tarjetaDTO, CobroDTO cobroDTO) throws PagoException {
         try {
             validarDatos(tarjetaDTO, cobroDTO);
 
             String token = convertirTarjetaAToken(tarjetaDTO);
-            Charge cargo = crearCargo(token, cobroDTO);
+
+            StripeChargeDTO stripeDTO = new StripeChargeDTO(
+                    cobroDTO.getMonto(),
+                    cobroDTO.getMoneda(),
+                    cobroDTO.getDescripcion(),
+                    token
+            );
+
+            Charge cargo = crearCargo(stripeDTO);
 
             if (transaccionExitosa(cargo)) {
                 LOG.log(Level.INFO,
-                        "Pago exitoso. ID: {0}, Monto: {1}, Estado: {2}",
-                        new Object[]{cargo.getId(), cargo.getAmount(), cargo.getStatus()});
+                        "Pago exitoso. ID: {0}, Estado: {1}",
+                        new Object[]{cargo.getId(), cargo.getStatus()});
                 return true;
             }
-
-            LOG.log(Level.WARNING,
-                    "Pago no aprobado. ID: {0}, Estado: {1}",
-                    new Object[]{cargo.getId(), cargo.getStatus()});
 
             throw new PagoException("La transacción no fue aprobada.");
 
         } catch (StripeException ex) {
-            LOG.log(Level.SEVERE, "Error con Stripe: {0}", ex.getMessage());
+            LOG.log(Level.SEVERE, ex.getMessage());
             throw new PagoException("Error al procesar pago: " + ex.getMessage());
 
         } catch (IllegalArgumentException ex) {
-            LOG.log(Level.WARNING, "Datos inválidos: {0}", ex.getMessage());
             throw new PagoException(ex.getMessage());
         }
     }
 
     /**
-     * Valida datos básicos antes de procesar el pago.
-     *
-     * @param tarjetaDTO datos de la tarjeta
-     * @param cobroDTO datos del cobro
+     * Validaciones básicas.
      */
     private void validarDatos(TarjetaDTO tarjetaDTO, CobroDTO cobroDTO) {
-
         if (tarjetaDTO == null) {
             throw new IllegalArgumentException("La tarjeta es obligatoria.");
         }
@@ -119,61 +123,46 @@ public class ControlPago {
     }
 
     /**
-     * Convierte el número de tarjeta capturado a un token de prueba Stripe.
-     *
-     * @param tarjetaDTO datos de la tarjeta
-     * @return token de prueba
+     * Convierte tarjeta a token de prueba.
      */
     private String convertirTarjetaAToken(TarjetaDTO tarjetaDTO) {
-
         String numero = tarjetaDTO.getNumero().replace(" ", "");
 
         switch (numero) {
-
-            case "4242424242424242" -> {
+            case "4242424242424242":
                 return "tok_visa";
-            }
 
-            case "4000000000009995" -> {
+            case "4000000000009995":
                 return "tok_chargeDeclinedInsufficientFunds";
-            }
 
-            case "4000000000000002" -> {
+            case "4000000000000002":
                 return "tok_chargeDeclined";
-            }
 
-            default ->
+            default:
                 throw new IllegalArgumentException("Tarjeta no válida.");
         }
     }
 
     /**
-     * Crea el cargo en Stripe.
-     *
-     * @param token token de prueba
-     * @param cobroDTO datos del cobro
-     * @return cargo generado
-     * @throws StripeException si ocurre error con Stripe
+     * Crea cargo en Stripe.
      */
-    private Charge crearCargo(String token, CobroDTO cobroDTO) throws StripeException {
-
+    private Charge crearCargo(StripeChargeDTO stripeDTO) throws StripeException {
         Map<String, Object> parametros = new HashMap<>();
-        parametros.put("amount", cobroDTO.getMonto());
-        parametros.put("currency", cobroDTO.getMoneda());
-        parametros.put("description", cobroDTO.getDescripcion());
-        parametros.put("source", token);
 
-        LOG.info("Enviando solicitud de cobro...");
+        parametros.put("amount", stripeDTO.getAmount());
+        parametros.put("currency", stripeDTO.getCurrency());
+        parametros.put("description", stripeDTO.getDescription());
+        parametros.put("source", stripeDTO.getSource());
+
         return Charge.create(parametros);
     }
 
     /**
-     * Verifica si la transacción fue aprobada.
-     *
-     * @param cargo respuesta de Stripe
-     * @return true si fue exitosa
+     * Verifica si la transacción fue exitosa.
      */
     private boolean transaccionExitosa(Charge cargo) {
-        return cargo != null && Boolean.TRUE.equals(cargo.getPaid()) && "succeeded".equalsIgnoreCase(cargo.getStatus());
+        return cargo != null
+                && Boolean.TRUE.equals(cargo.getPaid())
+                && "succeeded".equalsIgnoreCase(cargo.getStatus());
     }
 }

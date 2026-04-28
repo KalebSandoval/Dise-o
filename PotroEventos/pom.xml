@@ -16,6 +16,7 @@
         <module>Dao</module>
         <module>ObjetosNegocio</module>
         <module>GestionUsuarios</module>
+        <module>Infraestructura</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

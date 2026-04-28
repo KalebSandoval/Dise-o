@@ -10,19 +10,26 @@ import Pantallas.FrmRegistroItson;
 import Pantallas.vistas.PnlConsultar;
 import Pantallas.vistas.PnlConsultarEvento;
 import Pantallas.vistas.PnlEventos;
+import control.ControlPago;
 import dtos.AsientoDTO;
 import dtos.AsientoEventoDTO;
 import dtos.CategoriaDTO;
+import dtos.CobroDTO;
 import dtos.EventoDTO;
 import dtos.ReservacionDTO;
 import dtos.SeccionDTO;
+import dtos.TarjetaDTO;
 import dtos.UsuarioDTO;
 import fachada.InicioSesionFachada;
 import interfaces.IFachadaInicioSesion;
 import excepciones.CompraBoletoException;
 import excepciones.NegocioException;
+import excepciones.PagoException;
 import fachada.CompraBoletoFachada;
+import fachada.PagoFachada;
 import interfaz.ICompraBoleto;
+import interfaz.IPago;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +52,7 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
 
     private IFachadaInicioSesion logi = InicioSesionFachada.getInstance();
     private ICompraBoleto controlCompra = new CompraBoletoFachada();
+    private IPago controlPago = new PagoFachada();
     private SeccionBO seccionBO = SeccionBO.getInstance();
     private AsientoBO asientoBO = AsientoBO.getInstance();
     private AsientoEventoBO asientoEventoBO = AsientoEventoBO.getInstance();
@@ -55,6 +63,9 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     private FrmPlantillaSistema frmPlantilla;
     private FrmDetallesCompra frmDetalles;
     private FrmRegistroItson frmRegistro;
+
+    private List<AsientoEventoDTO> asientosPendientesCompra;
+    private Long totalPendienteCompra;
 
     /**
      * Oculta todas las ventanas instanciadas actualmente en el sistema. Es
@@ -328,6 +339,71 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         } catch (NegocioException e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean venderAsientos(List<AsientoEventoDTO> asientosSeleccionados, Long totalCompra, boolean gratuito) {
+
+        if (gratuito) {
+            for (AsientoEventoDTO asiento : asientosSeleccionados) {
+                try {
+                    asientoEventoBO.venderAsiento(asiento.getIdAsiento());
+                } catch (NegocioException ex) {
+                    System.getLogger(CoordinadorAplicacion.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                }
+            }
+
+            return true;
+
+        } else {
+            this.asientosPendientesCompra = new ArrayList<>(asientosSeleccionados);
+            this.totalPendienteCompra = totalCompra;
+
+            if (frmPago == null) {
+                frmPago = new FrmPago(this);
+            }
+
+            frmPago.setVisible(true);
+            frmPlantilla.setVisible(false);
+
+            return true;
+        }
+    }
+
+    @Override
+    public boolean realizarCompra(TarjetaDTO tarjeta, CobroDTO cobro) {
+        try {
+
+            boolean pagado = controlPago.procesarPago(tarjeta, cobro);
+
+            if (pagado) {
+
+                for (AsientoEventoDTO asiento : asientosPendientesCompra) {
+                    asientoEventoBO.venderAsiento(asiento.getIdAsiento());
+                }
+
+                asientosPendientesCompra.clear();
+                totalPendienteCompra = 0L;
+
+                return true;
+            }
+
+        } catch (NegocioException | PagoException ex) {
+            System.getLogger(CoordinadorAplicacion.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+
+        return false;
+    }
+
+    @Override
+    public Long getTotalPendiente() {
+        return totalPendienteCompra;
+    }
+
+    @Override
+    public void volverAConsultarEvento() {
+        frmPago.dispose();
+        frmPlantilla.setVisible(true);
     }
 
 }

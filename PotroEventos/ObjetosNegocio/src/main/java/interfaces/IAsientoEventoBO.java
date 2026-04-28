@@ -13,10 +13,12 @@ import java.util.List;
  * @author maria
  */
 public interface IAsientoEventoBO {
-    
+
     List<AsientoEventoDTO> consultarEstadosPorEvento(Long idEvento) throws NegocioException;
-    
-    boolean reservarAsiento(Long idAsiento)throws NegocioException;
-    
-    boolean liberarAsiento(Long idAsiento)throws NegocioException;
+
+    boolean reservarAsiento(Long idAsiento) throws NegocioException;
+
+    boolean liberarAsiento(Long idAsiento) throws NegocioException;
+
+    boolean venderAsiento(Long idAsiento) throws NegocioException;
 }

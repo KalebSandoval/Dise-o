@@ -16,18 +16,18 @@ public class AsientoDAO implements IAsientoDAO {
         List<Asiento> todos = new ArrayList<>();
 
         // --- SECCIÓN VIP (ID 1) ---
-        Seccion vip = new Seccion(1L, "VIP", 50, 1500.0);
+        Seccion vip = new Seccion(1L, "VIP", 50, 1500000L);
         todos.add(new Asiento(101L, "A", 1, vip));
         todos.add(new Asiento(102L, "A", 2, vip));
         todos.add(new Asiento(103L, "B", 1, vip));
 
         // --- SECCIÓN PLATEA (ID 2) ---
-        Seccion platea = new Seccion(2L, "PLATEA", 50, 800.0);
+        Seccion platea = new Seccion(2L, "PLATEA", 50, 800000L);
         todos.add(new Asiento(201L, "A", 1, platea));
         todos.add(new Asiento(202L, "A", 2, platea));
 
         // --- SECCIÓN GENERAL (ID 3) ---
-        Seccion general = new Seccion(3L, "GENERAL", 50, 400.0);
+        Seccion general = new Seccion(3L, "GENERAL", 50, 40000L);
         todos.add(new Asiento(301L, "A", 1, general));
 
         return todos;

@@ -3,9 +3,11 @@ package Controlador.interfaz;
 import dtos.AsientoDTO;
 import dtos.AsientoEventoDTO;
 import dtos.CategoriaDTO;
+import dtos.CobroDTO;
 import dtos.EventoDTO;
 import dtos.ReservacionDTO;
 import dtos.SeccionDTO;
+import dtos.TarjetaDTO;
 import dtos.UsuarioDTO;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,8 @@ public interface ICoordinadorAplicacion {
     public void mostrarConsultarEvento();
 
     public void volverAConsultar();
+    
+    public void volverAConsultarEvento();
 
     public List<EventoDTO> consultarEventos(CategoriaDTO categoria);
 
@@ -51,7 +55,7 @@ public interface ICoordinadorAplicacion {
 
     public Map<SeccionDTO, List<AsientoEventoDTO>> obtenerMapaOcupacion(Long idEvento);
 
-    public List<AsientoDTO> obtenerCatalogoAsientos();  
+    public List<AsientoDTO> obtenerCatalogoAsientos();
 
     public boolean agregarReservacion(ReservacionDTO reservacion);
 
@@ -62,8 +66,14 @@ public interface ICoordinadorAplicacion {
     public UsuarioDTO getUsuarioSesion();
 
     public void cerrarSesion();
-    
+
     boolean reservarAsiento(Long idAsientoEvento);
-    
+
     boolean liberarAsiento(Long idAsientoEvento);
+
+    public boolean venderAsientos(List<AsientoEventoDTO> asientosSeleccionados, Long totalCompra, boolean gratuito);
+
+    boolean realizarCompra(TarjetaDTO noTarjeta, CobroDTO cobro);
+    
+    Long getTotalPendiente();
 }

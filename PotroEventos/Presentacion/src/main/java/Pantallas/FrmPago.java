@@ -5,6 +5,10 @@
 package Pantallas;
 
 import Controlador.interfaz.ICoordinadorAplicacion;
+import dtos.CobroDTO;
+import dtos.TarjetaDTO;
+import javax.swing.JOptionPane;
+import utilerias.BotonUtileria;
 
 /**
  *
@@ -17,16 +21,12 @@ public class FrmPago extends javax.swing.JFrame {
 
     private ICoordinadorAplicacion coordinador;
 
-    /**
-     * Creates new form FrmInicio
-     */
-    public FrmPago() {
-        initComponents();
-    }
-
     public FrmPago(ICoordinadorAplicacion coordinador) {
         this.coordinador = coordinador;
         initComponents();
+
+        BotonUtileria.estilizarBoton(btnPagar);
+        BotonUtileria.estilizarBoton(btnVolver);
     }
 
     /**
@@ -44,20 +44,20 @@ public class FrmPago extends javax.swing.JFrame {
         jPanelAzulOscuro = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         panContenedor = new javax.swing.JPanel();
-        txtCorreo = new javax.swing.JTextField();
-        textCorreo = new javax.swing.JLabel();
-        txtCorreo1 = new javax.swing.JTextField();
+        txtNoTarjeta = new javax.swing.JTextField();
         textCorreo1 = new javax.swing.JLabel();
         textCorreo2 = new javax.swing.JLabel();
-        txtCorreo2 = new javax.swing.JTextField();
+        txtFechaExpiracion = new javax.swing.JTextField();
         textCorreo3 = new javax.swing.JLabel();
-        txtCorreo3 = new javax.swing.JTextField();
+        txtCVV = new javax.swing.JTextField();
         btnPagar = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         btnVolver = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocationByPlatform(true);
+        setResizable(false);
 
         jPanelInicio.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -88,7 +88,7 @@ public class FrmPago extends javax.swing.JFrame {
             .addGroup(jPanelAzulLayout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addComponent(textPotroEventos)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(293, Short.MAX_VALUE))
             .addComponent(jPanelAzulOscuro, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanelAzulLayout.setVerticalGroup(
@@ -102,25 +102,17 @@ public class FrmPago extends javax.swing.JFrame {
 
         panContenedor.setBackground(new java.awt.Color(255, 255, 255));
 
-        txtCorreo.setBackground(new java.awt.Color(234, 230, 230));
-        txtCorreo.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
-        txtCorreo.setForeground(new java.awt.Color(217, 217, 217));
-        txtCorreo.addActionListener(new java.awt.event.ActionListener() {
+        txtNoTarjeta.setBackground(new java.awt.Color(234, 230, 230));
+        txtNoTarjeta.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
+        txtNoTarjeta.setForeground(new java.awt.Color(0, 0, 0));
+        txtNoTarjeta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCorreoActionPerformed(evt);
+                txtNoTarjetaActionPerformed(evt);
             }
         });
-
-        textCorreo.setFont(new java.awt.Font("Verdana", 1, 14)); // NOI18N
-        textCorreo.setForeground(new java.awt.Color(0, 0, 0));
-        textCorreo.setText("Nombre");
-
-        txtCorreo1.setBackground(new java.awt.Color(234, 230, 230));
-        txtCorreo1.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
-        txtCorreo1.setForeground(new java.awt.Color(217, 217, 217));
-        txtCorreo1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCorreo1ActionPerformed(evt);
+        txtNoTarjeta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtNoTarjetaKeyReleased(evt);
             }
         });
 
@@ -132,12 +124,17 @@ public class FrmPago extends javax.swing.JFrame {
         textCorreo2.setForeground(new java.awt.Color(0, 0, 0));
         textCorreo2.setText("Fecha expiración");
 
-        txtCorreo2.setBackground(new java.awt.Color(234, 230, 230));
-        txtCorreo2.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
-        txtCorreo2.setForeground(new java.awt.Color(217, 217, 217));
-        txtCorreo2.addActionListener(new java.awt.event.ActionListener() {
+        txtFechaExpiracion.setBackground(new java.awt.Color(234, 230, 230));
+        txtFechaExpiracion.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
+        txtFechaExpiracion.setForeground(new java.awt.Color(0, 0, 0));
+        txtFechaExpiracion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCorreo2ActionPerformed(evt);
+                txtFechaExpiracionActionPerformed(evt);
+            }
+        });
+        txtFechaExpiracion.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtFechaExpiracionKeyReleased(evt);
             }
         });
 
@@ -145,21 +142,38 @@ public class FrmPago extends javax.swing.JFrame {
         textCorreo3.setForeground(new java.awt.Color(0, 0, 0));
         textCorreo3.setText("CVV");
 
-        txtCorreo3.setBackground(new java.awt.Color(234, 230, 230));
-        txtCorreo3.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
-        txtCorreo3.setForeground(new java.awt.Color(217, 217, 217));
-        txtCorreo3.addActionListener(new java.awt.event.ActionListener() {
+        txtCVV.setBackground(new java.awt.Color(234, 230, 230));
+        txtCVV.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
+        txtCVV.setForeground(new java.awt.Color(0, 0, 0));
+        txtCVV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtCorreo3ActionPerformed(evt);
+                txtCVVActionPerformed(evt);
+            }
+        });
+        txtCVV.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCVVKeyReleased(evt);
             }
         });
 
         btnPagar.setBackground(new java.awt.Color(44, 114, 243));
+        btnPagar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnPagarMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnPagarMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnPagarMouseExited(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Pagar");
+        jLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout btnPagarLayout = new javax.swing.GroupLayout(btnPagar);
         btnPagar.setLayout(btnPagarLayout);
@@ -178,6 +192,7 @@ public class FrmPago extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Volver");
+        jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout btnVolverLayout = new javax.swing.GroupLayout(btnVolver);
         btnVolver.setLayout(btnVolverLayout);
@@ -195,48 +210,45 @@ public class FrmPago extends javax.swing.JFrame {
         panContenedorLayout.setHorizontalGroup(
             panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panContenedorLayout.createSequentialGroup()
-                .addGap(248, 248, 248)
-                .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(textCorreo1)
-                    .addComponent(txtCorreo1, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(textCorreo)
-                    .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panContenedorLayout.createSequentialGroup()
-                        .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtCorreo2)
-                            .addComponent(textCorreo2, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtCorreo3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textCorreo3)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panContenedorLayout.createSequentialGroup()
+                        .addGap(100, 100, 100)
                         .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(281, Short.MAX_VALUE))
+                        .addGap(93, 93, 93)
+                        .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panContenedorLayout.createSequentialGroup()
+                        .addGap(86, 86, 86)
+                        .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(textCorreo1)
+                            .addComponent(txtNoTarjeta, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panContenedorLayout.createSequentialGroup()
+                                .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtFechaExpiracion)
+                                    .addComponent(textCorreo2, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtCVV, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(textCorreo3))))))
+                .addGap(0, 201, Short.MAX_VALUE))
         );
         panContenedorLayout.setVerticalGroup(
             panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panContenedorLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(textCorreo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtCorreo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(67, 67, 67)
                 .addComponent(textCorreo1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtCorreo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtNoTarjeta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 158, Short.MAX_VALUE)
                 .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panContenedorLayout.createSequentialGroup()
                         .addComponent(textCorreo2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtCorreo2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtFechaExpiracion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panContenedorLayout.createSequentialGroup()
                         .addComponent(textCorreo3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtCorreo3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+                        .addComponent(txtCVV, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(138, 138, 138)
                 .addGroup(panContenedorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -249,14 +261,14 @@ public class FrmPago extends javax.swing.JFrame {
         jPanelInicio.setLayout(jPanelInicioLayout);
         jPanelInicioLayout.setHorizontalGroup(
             jPanelInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanelAzul, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 672, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanelAzul, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanelInicioLayout.setVerticalGroup(
             jPanelInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelInicioLayout.createSequentialGroup()
                 .addComponent(jPanelAzul, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addComponent(jScrollPane1))
         );
 
@@ -266,7 +278,8 @@ public class FrmPago extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanelInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanelInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -274,23 +287,81 @@ public class FrmPago extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtCorreoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCorreoActionPerformed
+    private void txtNoTarjetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNoTarjetaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtCorreoActionPerformed
+    }//GEN-LAST:event_txtNoTarjetaActionPerformed
 
-    private void txtCorreo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCorreo1ActionPerformed
+    private void txtFechaExpiracionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFechaExpiracionActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtCorreo1ActionPerformed
+    }//GEN-LAST:event_txtFechaExpiracionActionPerformed
 
-    private void txtCorreo2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCorreo2ActionPerformed
+    private void txtCVVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCVVActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtCorreo2ActionPerformed
+    }//GEN-LAST:event_txtCVVActionPerformed
 
-    private void txtCorreo3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCorreo3ActionPerformed
+    private void btnPagarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPagarMouseClicked
+        String fechaExpiracion = txtFechaExpiracion.getText().trim();
+
+        String[] partesFecha = fechaExpiracion.split("/");
+        String mes = partesFecha[0];
+        String anio = partesFecha[1];
+
+        TarjetaDTO tarjeta = new TarjetaDTO(txtNoTarjeta.getText(), Integer.parseInt(mes), Integer.parseInt(anio), txtCVV.getText());
+        CobroDTO cobro = new CobroDTO(coordinador.getTotalPendiente(), "MXN", "Compra Boleto");
+        if (coordinador.realizarCompra(tarjeta, cobro)) {
+            JOptionPane.showMessageDialog(null, "Pago realizado exitosamente", "Pago realizado", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Pago no realizado", "No fue posible realizar el pago", JOptionPane.ERROR_MESSAGE);
+            coordinador.volverAConsultarEvento();
+        }
+    }//GEN-LAST:event_btnPagarMouseClicked
+
+    private void btnPagarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPagarMouseEntered
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtCorreo3ActionPerformed
+    }//GEN-LAST:event_btnPagarMouseEntered
+
+    private void btnPagarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPagarMouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnPagarMouseExited
+
+    private void txtNoTarjetaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNoTarjetaKeyReleased
+        String texto = txtNoTarjeta.getText().replaceAll("[^0-9]", "");
+
+        if (texto.length() > 16) {
+            texto = texto.substring(0, 16);
+        }
+
+        txtNoTarjeta.setText(texto);
+    }//GEN-LAST:event_txtNoTarjetaKeyReleased
+
+    private void txtFechaExpiracionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFechaExpiracionKeyReleased
+
+        String texto = txtFechaExpiracion.getText().replaceAll("[^0-9]", "");
+
+        if (texto.length() > 4) {
+            texto = texto.substring(0, 4);
+        }
+
+        if (texto.length() >= 3) {
+            texto = texto.substring(0, 2) + "/" + texto.substring(2);
+        }
+
+        txtFechaExpiracion.setText(texto);
+    }//GEN-LAST:event_txtFechaExpiracionKeyReleased
+
+    private void txtCVVKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCVVKeyReleased
+
+        String texto = txtCVV.getText().replaceAll("[^0-9]", "");
+
+        if (texto.length() > 3) {
+            texto = texto.substring(0, 3);
+        }
+
+        txtCVV.setText(texto);
+    }//GEN-LAST:event_txtCVVKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -303,14 +374,12 @@ public class FrmPago extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelInicio;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panContenedor;
-    private javax.swing.JLabel textCorreo;
     private javax.swing.JLabel textCorreo1;
     private javax.swing.JLabel textCorreo2;
     private javax.swing.JLabel textCorreo3;
     private javax.swing.JLabel textPotroEventos;
-    private javax.swing.JTextField txtCorreo;
-    private javax.swing.JTextField txtCorreo1;
-    private javax.swing.JTextField txtCorreo2;
-    private javax.swing.JTextField txtCorreo3;
+    private javax.swing.JTextField txtCVV;
+    private javax.swing.JTextField txtFechaExpiracion;
+    private javax.swing.JTextField txtNoTarjeta;
     // End of variables declaration//GEN-END:variables
 }

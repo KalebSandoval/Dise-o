@@ -46,7 +46,7 @@ public class PruebaStripe {
             );
 
             CobroDTO cobro = new CobroDTO(
-                    100000L,
+                    1000004L,
                     "mxn",
                     "Compra de boleto"
             );

@@ -4,6 +4,7 @@ import Entitys.Asiento;
 import Entitys.AsientoEvento;
 import Entitys.ENUMS.EstadoAsiento;
 import Entitys.Seccion;
+import excepciones.PersistenciaException;
 import interfaces.IAsientoEventoDAO;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +55,9 @@ public class AsientoEventoDAO implements IAsientoEventoDAO {
         }
 
         // SECCIONES PREDEFINIDAS
-        Seccion sVip = new Seccion(1L, "VIP", 50, 1500.0);
-        Seccion sPlatea = new Seccion(2L, "PLATEA", 50, 800.0);
-        Seccion sGral = new Seccion(3L, "GENERAL", 50, 400.0);
+        Seccion sVip = new Seccion(1L, "VIP", 50, 1500000L);
+        Seccion sPlatea = new Seccion(2L, "PLATEA", 50, 800000L);
+        Seccion sGral = new Seccion(3L, "GENERAL", 50, 40000L);
 
         // --- ASIENTOS VIP ---
         asientosEvento.add(crearAE(101L, "A", 1, sVip, EstadoAsiento.DISPONIBLE));
@@ -129,6 +130,23 @@ public class AsientoEventoDAO implements IAsientoEventoDAO {
         return false;
     }
 
+    @Override
+    public boolean venderAsiento(Long idAsiento) throws PersistenciaException {
+        for (AsientoEvento ae : asientosEvento) {
+            if (ae.getAsiento().getIdAsiento().equals(idAsiento)) {
+
+                if (ae.getEstadoAsiento() == EstadoAsiento.RESERVADO) {
+                    ae.setEstadoAsiento(EstadoAsiento.VENDIDO);
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Método auxiliar para evitar repetición de código en la creación de
      * asientos mock.
@@ -150,4 +168,5 @@ public class AsientoEventoDAO implements IAsientoEventoDAO {
 
         return ae;
     }
+
 }

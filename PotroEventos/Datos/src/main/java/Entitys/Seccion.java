@@ -14,18 +14,18 @@ public class Seccion {
     private Long idSeccion;
     private String nombre;
     private Integer capacidad;
-    private Double precioBase;
+    private Long precioBase;
 
     public Seccion() {
     }
 
-    public Seccion(String nombre, Integer capacidad, Double precioBase) {
+    public Seccion(String nombre, Integer capacidad, Long precioBase) {
         this.nombre = nombre;
         this.capacidad = capacidad;
         this.precioBase = precioBase;
     }
 
-    public Seccion(Long idSeccion, String nombre, Integer capacidad, Double precioBase) {
+    public Seccion(Long idSeccion, String nombre, Integer capacidad, Long precioBase) {
         this.idSeccion = idSeccion;
         this.nombre = nombre;
         this.capacidad = capacidad;
@@ -56,11 +56,11 @@ public class Seccion {
         this.capacidad = capacidad;
     }
 
-    public Double getPrecioBase() {
+    public Long getPrecioBase() {
         return precioBase;
     }
 
-    public void setPrecioBase(Double precioBase) {
+    public void setPrecioBase(Long precioBase) {
         this.precioBase = precioBase;
     }
 

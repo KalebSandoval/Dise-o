@@ -19,4 +19,6 @@ public interface IAsientoEventoDAO {
     boolean reservarAsiento(Long idAsiento) throws PersistenciaException;
 
     boolean liberarAsiento(Long idAsiento) throws PersistenciaException;
+    
+    boolean venderAsiento(Long idAsiento) throws PersistenciaException;
 }

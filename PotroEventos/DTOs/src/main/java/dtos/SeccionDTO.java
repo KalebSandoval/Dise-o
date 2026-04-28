@@ -14,27 +14,27 @@ public class SeccionDTO {
     private Long idSeccion;
     private String nombre;
     private Integer capacidad;
-    private Double precioBase;
+    private Long precioBase;
     /*
     no lo quitaré porque no sé dónde se use ahorita mismo,
     pero estoy pensando que funciona mejor si cada seccion tiene su ubicación, y 
     cada asiento tiene su seccion, en vez de tener que la ubicación almacene una
     lista de secciones y la sección una lista de asientos.
-    */
+     */
     private List<AsientoDTO> asientos;
     private UbicacionDTO ubicacion;
-    
+
     public SeccionDTO() {
     }
 
-    public SeccionDTO(Long idSeccion, String nombre, Integer capacidad, Double precioBase) {
+    public SeccionDTO(Long idSeccion, String nombre, Integer capacidad, Long precioBase) {
         this.idSeccion = idSeccion;
         this.nombre = nombre;
         this.capacidad = capacidad;
         this.precioBase = precioBase;
     }
 
-    public SeccionDTO(String nombre, Integer capacidad, Double precioBase) {
+    public SeccionDTO(String nombre, Integer capacidad, Long precioBase) {
         this.nombre = nombre;
         this.capacidad = capacidad;
         this.precioBase = precioBase;
@@ -64,11 +64,11 @@ public class SeccionDTO {
         this.capacidad = capacidad;
     }
 
-    public Double getPrecioBase() {
+    public Long getPrecioBase() {
         return precioBase;
     }
 
-    public void setPrecioBase(Double precioBase) {
+    public void setPrecioBase(Long precioBase) {
         this.precioBase = precioBase;
     }
 
