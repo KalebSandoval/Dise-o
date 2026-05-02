@@ -39,7 +39,7 @@ import utilerias.BotonUtileria;
  * @author María Valdez - 262775
  */
 public class PnlConsultarEvento extends javax.swing.JPanel {
-
+    
     private ICoordinadorAplicacion coordinador;
     private EventoDTO evento;
     private PnlEstadio estadioVisual;
@@ -64,12 +64,12 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
     public PnlConsultarEvento(ICoordinadorAplicacion coordinador, EventoDTO evento) {
         this.coordinador = coordinador;
         this.evento = evento;
-
+        
         initComponents();
-
+        
         BotonUtileria.estilizarBoton(btnVolver);
         lblTemporizador.setText(String.format(formatoTemporizador(tiempoRestante)));
-
+        
         modoPantalla();
         cargarDatos();
         if (!evento.isGratuito()) {
@@ -78,7 +78,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         }
         iniciarTemporizador();
     }
-
+    
     public void modoPantalla() {
         if (evento.isGratuito()) {
             lblTuSeccion.setText("Tus Boletos");
@@ -126,7 +126,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             jSeparator4.setVisible(true);
         }
     }
-
+    
     private String formatoTemporizador(int tiempoRestante) {
         int minutos = tiempoRestante / 60;
         int segundos = tiempoRestante % 60;
@@ -143,7 +143,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                 public void actionPerformed(ActionEvent e) {
                     tiempoRestante--;
                     lblTemporizador.setText(formatoTemporizador(tiempoRestante));
-
+                    
                     if (tiempoRestante <= 0) {
                         tiempoAgotado();
                     }
@@ -182,31 +182,31 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         }
         coordinador.mostrarInicio();
     }
-
+    
     private void cargarEstadio() {
         try {
             Map<SeccionDTO, List<AsientoEventoDTO>> mapa = coordinador.obtenerMapaOcupacion(evento.getIdEvento());
             List<AsientoDTO> catalogo = coordinador.obtenerCatalogoAsientos();
-
+            
             if (mapa == null || catalogo == null) {
                 System.err.println("Datos del estadio nulos");
                 return;
             }
-
+            
             estadioVisual = new PnlEstadio(mapa, catalogo, (List<SeccionDTO> secciones, List<AsientoDTO> asientosInfo, List<AsientoEventoDTO> asientosEventos) -> {
                 actualizarEtiquetasAsientos(secciones, asientosInfo, asientosEventos);
             }, coordinador);
-
+            
             estadioVisual.setPreferredSize(new java.awt.Dimension(400, 400));
-
+            
             PnlEstadio.removeAll();
             PnlEstadio.setLayout(new java.awt.BorderLayout());
-
+            
             PnlEstadio.add(estadioVisual, java.awt.BorderLayout.CENTER);
-
+            
             PnlEstadio.revalidate();
             PnlEstadio.repaint();
-
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -228,7 +228,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
 
         // Guardar los asientos seleccionados
         this.asientosSeleccionados = asientosEventos;
-
+        
         if (evento == null || evento.isGratuito()) {
             totalCompra = 0L;
             return;
@@ -252,7 +252,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         if (asientosEventos.size() == 1) {
             SeccionDTO seccion = secciones.get(0);
             AsientoDTO asiento = asientosInfo.get(0);
-
+            
             lblSeccion.setText(seccion.getNombre());
             lblFila.setText(asiento.getFila());
             lblAsiento.setText(String.valueOf(asiento.getNumero()));
@@ -264,11 +264,11 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             StringBuilder textoFilas = new StringBuilder("<html>");
             StringBuilder textoAsientos = new StringBuilder("<html>");
             StringBuilder textoPrecios = new StringBuilder("<html>");
-
+            
             for (int i = 0; i < asientosEventos.size(); i++) {
                 SeccionDTO seccion = secciones.get(i);
                 AsientoDTO asiento = asientosInfo.get(i);
-
+                
                 if (seccion != null && asiento != null) {
                     textoSecciones.append(seccion.getNombre()).append("<br>");
                     textoFilas.append(asiento.getFila()).append("<br>");
@@ -278,18 +278,18 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
                     ).append("<br>");
                 }
             }
-
+            
             textoSecciones.append("</html>");
             textoFilas.append("</html>");
             textoAsientos.append("</html>");
             textoPrecios.append("</html>");
-
+            
             lblSeccion.setText(textoSecciones.toString());
             lblFila.setText(textoFilas.toString());
             lblAsiento.setText(textoAsientos.toString());
             lblPrecio.setText(textoPrecios.toString());
         }
-
+        
         txtTotal.setText(String.format("Total: $%.2f", totalCompra / 100.0));
     }
 
@@ -302,33 +302,33 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
      */
     private Long calcularTotalCompra(List<SeccionDTO> secciones) {
         Long total = 0L;
-
+        
         for (SeccionDTO seccion : secciones) {
             if (seccion != null) {
                 total += seccion.getPrecioBase();
             }
         }
-
+        
         return total;
     }
-
+    
     public void cargarDatos() {
         if (evento == null) {
             return;
         }
         
         reservacionParcial = new ReservacionDTO();
-
+        
         if (evento.getUrlImagen() != null && !evento.getUrlImagen().isEmpty()) {
             ImageIcon icono = new ImageIcon(evento.getUrlImagen());
             int ancho = getWidth() > 0 ? getWidth() : 306;
             int alto = getHeight() > 0 ? getHeight() : 202;
-
+            
             Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
             iconEvento.setIcon(new ImageIcon(img));
             iconEvento.setText("");
         }
-
+        
         this.lblNombre.setText(evento.getNombreEvento());
         /*
         esta línea es pendejo no hace nada xq lit no acomoda un orto el texto de
@@ -686,60 +686,98 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
     }//GEN-LAST:event_btnVolverMouseClicked
 
     private void btnComprarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnComprarMouseClicked
-        // TODO add your handling code here:
+        
         if (evento.isGratuito()) {
+            
             int boletoAdquirir = Integer.parseInt(btnCant.getText());
+            
             if (boletoAdquirir == 0) {
-                JOptionPane.showMessageDialog(this, "Selecciona un 1 boleto.");
+                JOptionPane.showMessageDialog(this, "Selecciona un boleto.");
                 return;
             }
-            if(boletoAdquirir > 1){
+            
+            if (boletoAdquirir > 1) {
                 JOptionPane.showMessageDialog(this, "Solo puede adquirir un boleto por compra.");
                 return;
             }
+            
             BoletoDTO boletoGratis = new BoletoDTO("", 0.0, EstadoBoletoDTO.ACTIVO, evento, null);
             boletoGratis.setCodigoQR(coordinador.generarQR(evento, null));
+            
             reservacionParcial.setBoleto(boletoGratis);
             reservacionParcial.setCobro(null);
             reservacionParcial.setTotal(0.0);
             reservacionParcial.setEstado(ReservacionEstadoDTO.ACTIVA);
             reservacionParcial.setUsuario(coordinador.getUsuarioSesion());
             reservacionParcial.setFechaHora(LocalDateTime.now());
-            coordinador.venderAsientos(asientosSeleccionados, totalCompra, evento.isGratuito(), reservacionParcial);
-        } else {
-            if (asientosSeleccionados == null || asientosSeleccionados.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Selecciona un asiento en el mapa.");
-                return;
-            }
-            if(asientosSeleccionados.size() != 1){
-               JOptionPane.showMessageDialog(this, "Solo puede adquirir un boleto por compra.");
-                return; 
-            }
-            reservacionParcial.setBoleto(new BoletoDTO(
-                    null, 
-                    coordinador.generarQR(evento, new AsientoEventoDTO(EstadoAsientoDTO.RESERVADO, asientosSeleccionados.get(0).getIdAsiento(), evento.getIdEvento())), 
-                    100d, // -> aquí debe ser el valor del boleto pero pienso si es mejor agregarle un precio fijo a todos los boletos O,
-                    // and hear me out, las categorias tenga precio y ese sea el valor del evento cuando este no es gratis
-                    EstadoBoletoDTO.ACTIVO, 
-                    evento,
-                    new AsientoEventoDTO(EstadoAsientoDTO.RESERVADO, asientosSeleccionados.get(0).getIdAsiento(), evento.getIdEvento())));
-            int opcion = JOptionPane.showConfirmDialog(this, "¿Desea pagar con créditos de la aplicación?");
-            if(opcion == JOptionPane.OK_OPTION){
-                if(coordinador.getUsuarioSesion().getCreditos() >= totalCompra.intValue()*2){
-                    coordinador.getUsuarioSesion().setCreditos(coordinador.getUsuarioSesion().getCreditos() - totalCompra.intValue()*2);
-                    reservacionParcial.setCobro(new CobroDTO(totalCompra*2, "CRÉDITO APP", "Pago del evento con créditos de la aplicación"));
-                    coordinador.venderAsientos(asientosSeleccionados, totalCompra, true, reservacionParcial);
-                } else {
-                    JOptionPane.showMessageDialog(this, "No cuenta con el crédito suficiente para realizar esta operación.");
-                    return;
-                }
+            
+            coordinador.venderAsientos(asientosSeleccionados, 0L, true, reservacionParcial);
+            
+            JOptionPane.showMessageDialog(this, "Boleto adquirido correctamente.");
+            coordinador.mostrarInicio();
+            return;
+        }
+
+        // ================= EVENTO DE PAGO =================
+        if (asientosSeleccionados == null || asientosSeleccionados.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Selecciona un asiento en el mapa.");
+            return;
+        }
+        
+        if (asientosSeleccionados.size() != 1) {
+            JOptionPane.showMessageDialog(this, "Solo puede adquirir un boleto por compra.");
+            return;
+        }
+        
+        AsientoEventoDTO asientoDTO = new AsientoEventoDTO(
+                EstadoAsientoDTO.RESERVADO,
+                asientosSeleccionados.get(0).getIdAsiento(),
+                evento.getIdEvento()
+        );
+        
+        BoletoDTO boleto = new BoletoDTO(
+                null,
+                coordinador.generarQR(evento, asientoDTO),
+                0.0, // El backend maneja el precio real
+                EstadoBoletoDTO.ACTIVO,
+                evento,
+                asientoDTO
+        );
+        
+        reservacionParcial.setBoleto(boleto);
+        reservacionParcial.setFechaHora(LocalDateTime.now());
+        reservacionParcial.setTotal(totalCompra.doubleValue());
+        reservacionParcial.setEstado(ReservacionEstadoDTO.ACTIVA);
+        reservacionParcial.setUsuario(coordinador.getUsuarioSesion());
+        
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Desea pagar con créditos de la aplicación?");
+
+        // ================= PAGO CON CRÉDITOS =================
+        if (opcion == JOptionPane.OK_OPTION) {
+            
+            Long total = totalCompra;
+            
+            reservacionParcial.setCobro(
+                    new CobroDTO(total * 2, "CRÉDITO APP", "Pago con créditos")
+            );
+            
+            boolean exito = coordinador.venderAsientos(asientosSeleccionados, total, false, reservacionParcial);
+            
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Compra realizada con créditos.");
+                coordinador.mostrarInicio();
             } else {
-                reservacionParcial.setFechaHora(LocalDateTime.now());
-                reservacionParcial.setTotal(Double.valueOf(totalCompra.doubleValue())); 
-                reservacionParcial.setEstado(ReservacionEstadoDTO.ACTIVA);
-                reservacionParcial.setUsuario(coordinador.getUsuarioSesion());
-                coordinador.venderAsientos(asientosSeleccionados, totalCompra, evento.isGratuito(), reservacionParcial);
+                JOptionPane.showMessageDialog(this, "No tienes créditos suficientes.");
             }
+            
+        } // ================= PAGO CON TARJETA =================
+        else if (opcion == JOptionPane.NO_OPTION) {
+
+            // Guardas como pendiente en backend
+            coordinador.venderAsientos(asientosSeleccionados, totalCompra, false, reservacionParcial);
+
+            // Ahora sí vas a la pantalla de pago
+            coordinador.mostrarPago(reservacionParcial);
         }
     }//GEN-LAST:event_btnComprarMouseClicked
 
@@ -747,7 +785,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         // TODO add your handling code here:
         try {
             int cantidadActual = Integer.parseInt(btnCant.getText());
-
+            
             if (cantidadActual > 0) {
                 cantidadActual--;
                 btnCant.setText(String.valueOf(cantidadActual));
@@ -755,7 +793,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         } catch (NumberFormatException ex) {
             btnCant.setText("0");
         }
-
+        
 
     }//GEN-LAST:event_btnMenosMouseClicked
 
@@ -764,7 +802,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
         try {
             int cantidadActual = Integer.parseInt(btnCant.getText());
             int limiteBoletos = evento.getDisponibilidad();
-
+            
             if (cantidadActual < limiteBoletos) {
                 cantidadActual++;
                 btnCant.setText(String.valueOf(cantidadActual));

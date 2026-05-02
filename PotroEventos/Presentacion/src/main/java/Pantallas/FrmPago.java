@@ -23,16 +23,14 @@ public class FrmPago extends javax.swing.JFrame {
     private ICoordinadorAplicacion coordinador;
     private ReservacionDTO reservacion;
 
-    public FrmPago(ICoordinadorAplicacion coordinador) {
+    public FrmPago(ICoordinadorAplicacion coordinador, ReservacionDTO reservacion) {
         this.coordinador = coordinador;
+        this.reservacion = reservacion;
+        
         initComponents();
 
         BotonUtileria.estilizarBoton(btnPagar);
         BotonUtileria.estilizarBoton(btnVolver);
-    }
-    
-    public void setReservacion(ReservacionDTO reservacion){
-        this.reservacion = reservacion;
     }
 
     /**

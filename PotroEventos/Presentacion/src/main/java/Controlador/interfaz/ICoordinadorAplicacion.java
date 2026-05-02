@@ -39,7 +39,9 @@ public interface ICoordinadorAplicacion {
     public void finalizarCompra();
 
     public void mostrarEventos(CategoriaDTO categoria);
-
+    
+    public void mostrarPago(ReservacionDTO reservacion);
+    
     public void volverAEventos();
 
     public void mostrarConsultarEvento();

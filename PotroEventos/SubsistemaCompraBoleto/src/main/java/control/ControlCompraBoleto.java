@@ -26,17 +26,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.glxn.qrgen.core.image.ImageType;
 import net.glxn.qrgen.javase.QRCode;
-//import objetosNegocio.EventoBO;
 
 /**
  * Controlador de caso de uso para la compra de boletos. Orquesta la
  * comunicación con los BOs y transforma Entidades a DTOs.
  *
- * * @author Kaleb
+ * @author Kaleb
  */
 public class ControlCompraBoleto implements IControlCompraBoleto {
 
-    // Dependencias a la capa de Negocio (BOs)
     private final IEventoBO eventoBO;
     private final ISeccionBO seccionBO;
     private final IAsientoBO asientoBO;
@@ -45,9 +43,20 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
     private final ICategoriaBO categoriaBO;
     private final IUsuarioBO usuarioBO;
     private final IPago controlPago;
+
+    /**
+     * Lista de asientos pendientes de pago
+     */
     private List<AsientoEventoDTO> asientosPendientesCompra;
+
+    /**
+     * Total pendiente en centavos
+     */
     private Long totalPendienteCompra;
 
+    /**
+     * Constructor que inicializa dependencias y estado interno.
+     */
     public ControlCompraBoleto() {
         this.eventoBO = EventoBO.getInstance();
         this.seccionBO = SeccionBO.getInstance();
@@ -57,10 +66,17 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         this.categoriaBO = CategoriaBO.getInstance();
         this.usuarioBO = UsuarioBO.getInstance();
         this.controlPago = new PagoFachada();
+
+        this.asientosPendientesCompra = new ArrayList<>();
+        this.totalPendienteCompra = 0L;
     }
 
     /**
-     * Obtiene el evento desde el BO y lo convierte a EventoDTO.
+     * Obtiene la información de un evento por su ID.
+     *
+     * @param idEvento identificador del evento
+     * @return evento encontrado
+     * @throws CompraBoletoException si ocurre un error o no existe el evento
      */
     @Override
     public EventoDTO obtenerInformacionEvento(Long idEvento) throws CompraBoletoException {
@@ -70,42 +86,48 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
                 throw new CompraBoletoException("El evento con ID " + idEvento + " no fue encontrado.");
             }
             return e;
-
         } catch (Exception ex) {
             throw new CompraBoletoException("Error al obtener la información del evento: " + ex.getMessage());
         }
     }
 
     /**
-     * Obtiene las secciones de un evento y las convierte a SeccionDTO.
+     * Obtiene las secciones de un evento.
+     *
+     * @param idEvento identificador del evento
+     * @return lista de secciones
+     * @throws CompraBoletoException si ocurre un error
      */
     @Override
     public List<SeccionDTO> obtenerSeccionesEvento(Long idEvento) throws CompraBoletoException {
         try {
-            List<SeccionDTO> secciones = seccionBO.consultarSeccionesPorEvento(idEvento);
-            return secciones;
+            return seccionBO.consultarSeccionesPorEvento(idEvento);
         } catch (Exception ex) {
             throw new CompraBoletoException("Error al cargar las secciones: " + ex.getMessage());
         }
     }
 
     /**
-     * Obtiene los estados de los asientos (ocupados/disponibles) y los
-     * convierte a AsientoEventoDTO.
+     * Obtiene la ocupación de los asientos de un evento.
+     *
+     * @param idEvento identificador del evento
+     * @return lista de estados de asientos
+     * @throws CompraBoletoException si ocurre un error
      */
     @Override
     public List<AsientoEventoDTO> obtenerOcupacionEvento(Long idEvento) throws CompraBoletoException {
         try {
-            List<AsientoEventoDTO> estados = asientoEventoBO.consultarEstadosPorEvento(idEvento);
-            return estados;
-
+            return asientoEventoBO.consultarEstadosPorEvento(idEvento);
         } catch (Exception ex) {
             throw new CompraBoletoException("Error al cargar la ocupación del evento: " + ex.getMessage());
         }
     }
 
     /**
-     * Obtiene el catálogo físico de asientos y lo convierte a AsientoDTO.
+     * Obtiene el catálogo de asientos físicos.
+     *
+     * @return lista de asientos
+     * @throws CompraBoletoException si ocurre un error
      */
     @Override
     public List<AsientoDTO> obtenerCatalogoAsientos() throws CompraBoletoException {
@@ -124,33 +146,31 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         }
     }
 
+    /**
+     * Construye un mapa de ocupación agrupado por sección.
+     *
+     * @param idEvento identificador del evento
+     * @return mapa de secciones con sus asientos
+     * @throws CompraBoletoException si ocurre un error
+     */
     @Override
     public Map<SeccionDTO, List<AsientoEventoDTO>> obtenerMapaOcupacion(Long idEvento) throws CompraBoletoException {
         try {
             List<SeccionDTO> secciones = seccionBO.consultarSeccionesPorEvento(idEvento);
             List<AsientoEventoDTO> ocupacion = asientoEventoBO.consultarEstadosPorEvento(idEvento);
-
-            // Catálogo real desde asientoBO (NO desde coordinador)
             List<AsientoDTO> catalogo = this.obtenerCatalogoAsientos();
 
             Map<SeccionDTO, List<AsientoEventoDTO>> mapa = new HashMap<>();
 
-            if (secciones != null && ocupacion != null) {
-                for (SeccionDTO seccion : secciones) {
+            for (SeccionDTO seccion : secciones) {
+                List<AsientoEventoDTO> asientosDeSeccion = ocupacion.stream()
+                        .filter(ae -> catalogo.stream().anyMatch(asiento
+                        -> asiento.getIdAsiento().equals(ae.getIdAsiento())
+                        && asiento.getIdSeccion().equals(seccion.getIdSeccion())
+                ))
+                        .collect(Collectors.toList());
 
-                    List<AsientoEventoDTO> asientosDeSeccion = ocupacion.stream()
-                            .filter(ae -> {
-                                for (AsientoDTO asiento : catalogo) {
-                                    if (asiento.getIdAsiento().equals(ae.getIdAsiento())) {
-                                        return asiento.getIdSeccion().equals(seccion.getIdSeccion());
-                                    }
-                                }
-                                return false;
-                            })
-                            .collect(Collectors.toList());
-
-                    mapa.put(seccion, asientosDeSeccion);
-                }
+                mapa.put(seccion, asientosDeSeccion);
             }
 
             return mapa;
@@ -160,6 +180,13 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         }
     }
 
+    /**
+     * Agrega una reservación al sistema.
+     *
+     * @param reservacion datos de la reservación
+     * @return true si se agregó correctamente
+     * @throws CompraBoletoException si ocurre un error
+     */
     @Override
     public boolean agregarReservacion(ReservacionDTO reservacion) throws CompraBoletoException {
         try {
@@ -169,37 +196,43 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         }
     }
 
+    /**
+     * Genera un código QR para un boleto.
+     *
+     * @param evento evento asociado
+     * @param asiento asiento del boleto
+     * @return ruta del archivo QR generado
+     * @throws CompraBoletoException si ocurre un error
+     */
     public String generarCodigoQR(EventoDTO evento, AsientoEventoDTO asiento) throws CompraBoletoException {
         try {
-            int asientoID = 0;
-            int identificador = 0;
-            if (asiento == null) {
-                asientoID = 0;
-                identificador = LocalDateTime.now().getNano();
-            } else {
-                asientoID = asiento.getIdAsiento().intValue();
-                identificador = asiento.getIdAsiento().intValue();
-            }
-            String datosBoleto = "Evento: " + evento.getNombreEvento()
-                    + ", Fecha y Hora: " + evento.getFechaHora()
+            int asientoID = (asiento == null) ? 0 : asiento.getIdAsiento().intValue();
+            int identificador = (asiento == null) ? LocalDateTime.now().getNano() : asientoID;
+
+            String datos = "Evento: " + evento.getNombreEvento()
+                    + ", Fecha: " + evento.getFechaHora()
                     + ", Ubicación: " + evento.getUbicacion().getNombre()
                     + ", Asiento: " + asientoID;
 
-            String nombreCarpeta = "qrs-boletos";
-            File archivoQRTemporal = QRCode.from(datosBoleto)
-                    .to(ImageType.PNG)
-                    .withSize(300, 300)
-                    .file();
-            String nombreArchivo = "Boleto_" + identificador + evento.getIdEvento() + ".png";
-            File archivoFinal = new File("qrs-boletos", nombreArchivo);
-            Files.copy(archivoQRTemporal.toPath(), archivoFinal.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            File temp = QRCode.from(datos).to(ImageType.PNG).withSize(300, 300).file();
+            File finalQR = new File("qrs-boletos", "Boleto_" + identificador + evento.getIdEvento() + ".png");
 
-            return archivoFinal.getAbsolutePath();
+            Files.copy(temp.toPath(), finalQR.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            return finalQR.getAbsolutePath();
+
         } catch (Exception e) {
-            throw new CompraBoletoException("Fallos para generar QR: " + e.getMessage());
+            throw new CompraBoletoException("Error al generar QR: " + e.getMessage());
         }
     }
 
+    /**
+     * Reserva un asiento.
+     *
+     * @param idAsientoEvento identificador del asiento
+     * @return true si se reservó
+     * @throws CompraBoletoException si ocurre un error
+     */
     public boolean reservarAsiento(Long idAsientoEvento) throws CompraBoletoException {
         try {
             return asientoEventoBO.reservarAsiento(idAsientoEvento);
@@ -208,6 +241,13 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         }
     }
 
+    /**
+     * Libera un asiento reservado.
+     *
+     * @param idAsientoEvento identificador del asiento
+     * @return true si se liberó
+     * @throws CompraBoletoException si ocurre un error
+     */
     public boolean liberarAsiento(Long idAsientoEvento) throws CompraBoletoException {
         try {
             return asientoEventoBO.liberarAsiento(idAsientoEvento);
@@ -216,45 +256,47 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         }
     }
 
+    /**
+     * Maneja la lógica de venta de asientos.
+     */
     public boolean venderAsientos(List<AsientoEventoDTO> asientosSeleccionados, Long totalCompra, boolean gratuito, ReservacionDTO reservacion) throws CompraBoletoException {
         try {
             if (reservacion == null) {
                 return false;
             }
+
             if (gratuito) {
-                try {
-                    reservacionBO.agregarReservacion(reservacion);
-                } catch (NegocioException ex) {
-                    throw new CompraBoletoException(ex.getMessage());
-                }
-
-                return true;
-
-            } else {
-                if (reservacion.getCobro() != null) {
-                    if (usuarioBO.restarCreditos(totalCompra.intValue() * 2, reservacion.getUsuario().getIdUsuario())) {
-                        asientoEventoBO.venderAsiento(reservacion.getBoleto().getAsiento().getIdAsiento());
-                        reservacionBO.agregarReservacion(reservacion);
-                        return true;
-                    }
-                    return false;
-                }
-                this.asientosPendientesCompra = new ArrayList<>(asientosSeleccionados);
-                this.totalPendienteCompra = totalCompra;
+                reservacionBO.agregarReservacion(reservacion);
                 return true;
             }
+
+            if (reservacion.getCobro() != null) {
+                if (usuarioBO.restarCreditos(totalCompra.intValue() * 2, reservacion.getUsuario().getIdUsuario())) {
+                    asientoEventoBO.venderAsiento(reservacion.getBoleto().getAsiento().getIdAsiento());
+                    reservacionBO.agregarReservacion(reservacion);
+                    return true;
+                }
+                return false;
+            }
+
+            this.asientosPendientesCompra = new ArrayList<>(asientosSeleccionados);
+            this.totalPendienteCompra = totalCompra;
+
+            return true;
+
         } catch (NegocioException e) {
-            return false;
+            throw new CompraBoletoException(e.getMessage());
         }
     }
 
-    public boolean realizarCompra(TarjetaDTO noTarjeta, CobroDTO cobro) throws CompraBoletoException {
+    /**
+     * Realiza el pago de la compra pendiente.
+     */
+    public boolean realizarCompra(TarjetaDTO tarjeta, CobroDTO cobro) throws CompraBoletoException {
         try {
-
-            boolean pagado = controlPago.procesarPago(noTarjeta, cobro);
+            boolean pagado = controlPago.procesarPago(tarjeta, cobro);
 
             if (pagado) {
-
                 for (AsientoEventoDTO asiento : asientosPendientesCompra) {
                     asientoEventoBO.venderAsiento(asiento.getIdAsiento());
                 }
@@ -272,6 +314,11 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         return false;
     }
 
+    /**
+     * Obtiene el total pendiente de pago.
+     *
+     * @return total en centavos
+     */
     public Long getTotalPendiente() {
         return totalPendienteCompra;
     }

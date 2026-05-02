@@ -72,6 +72,7 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     private FrmPlantillaSistema frmPlantilla;
     private FrmDetallesCompra frmDetalles;
     private FrmRegistroItson frmRegistro;
+    private ReservacionDTO reservacionActual;
 
     /**
      * Oculta todas las ventanas instanciadas actualmente en el sistema. Es
@@ -361,6 +362,17 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         } catch (CompraBoletoException ex) {
             return null;
         }
+    }
+
+    @Override
+    public void mostrarPago(ReservacionDTO reservacion) {
+        ocultarTodo();
+
+        this.reservacionActual = reservacion;
+
+        frmPago = new FrmPago(this, reservacionActual);
+        frmPago.setVisible(true);
+        frmPago.setLocationRelativeTo(null);
     }
 
 }
