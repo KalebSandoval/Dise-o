@@ -12,6 +12,7 @@ import dtos.CobroDTO;
 import dtos.ENUMS.EstadoAsientoDTO;
 import dtos.ENUMS.EstadoBoletoDTO;
 import dtos.ENUMS.ReservacionEstadoDTO;
+import dtos.ENUMS.TipoEventoN;
 import dtos.EventoDTO;
 import dtos.ReservacionDTO;
 import dtos.SeccionDTO;
@@ -686,7 +687,13 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
     }//GEN-LAST:event_btnVolverMouseClicked
 
     private void btnComprarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnComprarMouseClicked
-        
+
+        if(evento.getTipoEvento() == TipoEventoN.ITSON){
+            if(coordinador.getUsuarioITSON() == null){
+                coordinador.mostarRegistroITSON();
+                return;
+            }
+        }
         if (evento.isGratuito()) {
             
             int boletoAdquirir = Integer.parseInt(btnCant.getText());
@@ -714,7 +721,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             coordinador.venderAsientos(asientosSeleccionados, 0L, true, reservacionParcial);
             
             JOptionPane.showMessageDialog(this, "Boleto adquirido correctamente.");
-            coordinador.mostrarInicio();
+            coordinador.mostrarDetalles(reservacionParcial);
             return;
         }
 
@@ -765,7 +772,7 @@ public class PnlConsultarEvento extends javax.swing.JPanel {
             
             if (exito) {
                 JOptionPane.showMessageDialog(this, "Compra realizada con créditos.");
-                coordinador.mostrarInicio();
+                coordinador.mostrarDetalles(reservacionParcial);
             } else {
                 JOptionPane.showMessageDialog(this, "No tienes créditos suficientes.");
             }

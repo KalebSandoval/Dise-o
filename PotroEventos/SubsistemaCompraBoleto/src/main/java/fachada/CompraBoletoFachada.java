@@ -10,6 +10,7 @@ import dtos.EventoDTO;
 import dtos.ReservacionDTO;
 import dtos.SeccionDTO;
 import dtos.TarjetaDTO;
+import dtos.UsuarioInstitucionalDTO;
 import excepciones.CompraBoletoException;
 import interfaz.ICompraBoleto;
 import java.util.List;
@@ -86,5 +87,10 @@ public class CompraBoletoFachada implements ICompraBoleto {
     @Override
     public Map<SeccionDTO, List<AsientoEventoDTO>> obtenerMapaOcupacion(Long idEvento) throws CompraBoletoException {
         return controlCompra.obtenerMapaOcupacion(idEvento);
+    }
+    
+    @Override
+    public boolean validarCredencialesITSON(UsuarioInstitucionalDTO usuario){
+        return controlCompra.validarCredencialesITSON(usuario);
     }
 }

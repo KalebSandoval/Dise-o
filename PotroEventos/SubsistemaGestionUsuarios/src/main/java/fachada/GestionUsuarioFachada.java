@@ -26,29 +26,29 @@ public class GestionUsuarioFachada implements IGestionUsuariosFachada{
         this.control = new ControlGestionUsuarios();
     }
     
-    // --- Metodos para asociar un usuario a la sesion 
-    @Override
-    public UsuarioDTO vincularUsuario(UsuarioDTO usuario) throws GestionUsuarioException{
-        try{
-            // recibe el usuario
-            UsuarioDTO user = control.obtenerUsuarioActivo(usuario);
-            
-            if(user == null){
-                throw new GestionUsuarioException("El usuario no se ha podido vincular.");
-            }
-            user = control.asociarUsuario(usuario);
-            return user;
-        }catch(GestionUsuarioException ex){
-            throw new GestionUsuarioException(ex.getMessage());
-        }
-        
-    }
+//    // --- Metodos para asociar un usuario a la sesion 
+//    @Override
+//    public UsuarioDTO vincularUsuario(UsuarioDTO usuario) throws GestionUsuarioException{
+//        try{
+//            // recibe el usuario
+//            UsuarioDTO user = control.obtenerUsuarioActivo(usuario);
+//            
+//            if(user == null){
+//                throw new GestionUsuarioException("El usuario no se ha podido vincular.");
+//            }
+//            user = control.asociarUsuario(usuario);
+//            return user;
+//        }catch(GestionUsuarioException ex){
+//            throw new GestionUsuarioException(ex.getMessage());
+//        }
+//        
+//    }
     
-    // --- Metodo para deslindar un usuario de una sesion ---
-    @Override
-    public void desvincularUsuario()throws GestionUsuarioException{
-        control.limpiarSesion();
-    }
+//    // --- Metodo para deslindar un usuario de una sesion ---
+//    @Override
+//    public void desvincularUsuario()throws GestionUsuarioException{
+//        control.limpiarSesion();
+//    }
     
     // --- Método que regresa el usuario con la sesion activa --- 
     @Override

@@ -20,6 +20,7 @@ import dtos.ReservacionDTO;
 import dtos.SeccionDTO;
 import dtos.TarjetaDTO;
 import dtos.UsuarioDTO;
+import dtos.UsuarioInstitucionalDTO;
 import fachada.InicioSesionFachada;
 import interfaces.IFachadaInicioSesion;
 import excepciones.CompraBoletoException;
@@ -66,6 +67,7 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
     private AsientoEventoBO asientoEventoBO = AsientoEventoBO.getInstance();
 
     private UsuarioDTO usuario;
+    private UsuarioInstitucionalDTO usuarioITSON;
     private FrmInicioSesion frmInicioSesion;
     private FrmRegistrarse frmRegistrarse;
     private FrmPago frmPago;
@@ -95,6 +97,9 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         if (frmRegistro != null) {
             frmRegistro.setVisible(false);
         }
+        if(frmPlantilla != null){
+            frmPlantilla.setVisible(false);
+        }
     }
 
     public UsuarioDTO getUsuario() {
@@ -102,6 +107,19 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
             return null;
         }
         return usuario;
+    }
+    
+    @Override
+    public void setUsuarioITSON(UsuarioInstitucionalDTO usuario){
+        this.usuarioITSON = usuario;
+    }
+    
+    @Override
+    public UsuarioInstitucionalDTO getUsuarioITSON(){
+        if(usuarioITSON == null){
+            return null;
+        }
+        return usuarioITSON;
     }
 
     @Override
@@ -177,8 +195,19 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         ocultarTodo();
         if (frmDetalles == null) {
             frmDetalles = new FrmDetallesCompra(this, reservacion);
+        } else {
+            frmDetalles.setReservacion(reservacion);
         }
         frmDetalles.setVisible(true);
+    }
+    
+    @Override
+    public void mostarRegistroITSON(){
+        ocultarTodo();
+        if(frmRegistro == null){
+            frmRegistro = new FrmRegistroItson(this);
+        }
+        frmRegistro.setVisible(true);
     }
 
     @Override
@@ -351,7 +380,10 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
 
     @Override
     public void volverAConsultarEvento() {
-        frmPago.dispose();
+        if (frmPago != null) {
+            frmPago.dispose();
+        }
+        frmRegistro.dispose();
         frmPlantilla.setVisible(true);
     }
 
@@ -373,6 +405,11 @@ public class CoordinadorAplicacion implements ICoordinadorAplicacion {
         frmPago = new FrmPago(this, reservacionActual);
         frmPago.setVisible(true);
         frmPago.setLocationRelativeTo(null);
+    }
+    
+    @Override
+    public boolean validarCredenciales(UsuarioInstitucionalDTO credenciales){
+        return controlCompra.validarCredencialesITSON(credenciales);
     }
 
 }

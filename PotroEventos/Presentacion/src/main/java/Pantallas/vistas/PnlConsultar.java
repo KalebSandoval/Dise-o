@@ -9,9 +9,13 @@ import dtos.ENUMS.ReservacionEstadoDTO;
 import dtos.EventoDTO;
 import dtos.ReservacionDTO;
 import dtos.UsuarioDTO;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 
 /**
  *
@@ -31,7 +35,16 @@ public class PnlConsultar extends javax.swing.JPanel {
      */
     public PnlConsultar(ICoordinadorAplicacion coordinador) {
         this.coordinador = coordinador;
+        this.usuario = coordinador.getUsuarioSesion();
         initComponents();
+        cargarInfo();
+    }
+
+    public void mostrarDetalles(ReservacionDTO reservacion) {
+        coordinador.mostrarDetalles(reservacion);
+    }
+    
+    private void cargarInfo(){
         List<ReservacionDTO> proximos = new ArrayList<>();
         List<ReservacionDTO> pasados = new ArrayList<>();
         List<ReservacionDTO> cancelados = new ArrayList<>();
@@ -44,28 +57,33 @@ public class PnlConsultar extends javax.swing.JPanel {
                 pasados.add(r);
             }
         }
+        pnlProximos.setLayout(new BoxLayout(pnlProximos, BoxLayout.Y_AXIS));
+        pnlPasados.setLayout(new BoxLayout(pnlPasados, BoxLayout.Y_AXIS));
+        pnlCancelados.setLayout(new BoxLayout(pnlCancelados, BoxLayout.Y_AXIS));
         for (ReservacionDTO proximo : proximos) {
             PnlEvento panel = PnlEvento.crearParaConsulta(proximo, this, coordinador);
-            add(panel);
-            revalidate();
-            repaint();
+            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
+            pnlProximos.add(panel);
         }
+        pnlProximos.add(Box.createVerticalGlue());
+        pnlProximos.revalidate();
+        pnlProximos.repaint();
         for (ReservacionDTO pasado : pasados) {
             PnlEvento panel = PnlEvento.crearParaConsulta(pasado, this, coordinador);
-            add(panel);
-            revalidate();
-            repaint();
+            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
+            pnlPasados.add(panel);
         }
+        pnlPasados.add(Box.createVerticalGlue());
+        pnlPasados.revalidate();
+        pnlPasados.repaint();
         for (ReservacionDTO cancelado : cancelados) {
             PnlEvento panel = PnlEvento.crearParaConsulta(cancelado, this, coordinador);
-            add(panel);
-            revalidate();
-            repaint();
+            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
+            pnlCancelados.add(panel);
         }
-    }
-
-    public void mostrarDetalles(ReservacionDTO reservacion) {
-        coordinador.mostrarDetalles(reservacion);
+        pnlCancelados.add(Box.createVerticalGlue());
+        pnlCancelados.revalidate();
+        pnlCancelados.repaint();
     }
 
     /**
@@ -80,60 +98,21 @@ public class PnlConsultar extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jEditorPane1 = new javax.swing.JEditorPane();
         jPanel7 = new javax.swing.JPanel();
-        jPanel8 = new javax.swing.JPanel();
-        jScrollBar1 = new javax.swing.JScrollBar();
-        jPanel1 = new javax.swing.JPanel();
-        jScrollBar3 = new javax.swing.JScrollBar();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollBar2 = new javax.swing.JScrollBar();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        pnlProximos = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        pnlPasados = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        pnlCancelados = new javax.swing.JPanel();
 
         jScrollPane1.setViewportView(jEditorPane1);
 
         setOpaque(false);
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-        jPanel8.setLayout(jPanel8Layout);
-        jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addGap(0, 260, Short.MAX_VALUE)
-                .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 260, Short.MAX_VALUE)
-                .addComponent(jScrollBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 260, Short.MAX_VALUE)
-                .addComponent(jScrollBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("Eventos Próximos");
@@ -144,40 +123,56 @@ public class PnlConsultar extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel3.setText("Eventos Cancelados");
 
+        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        pnlProximos.setLayout(new javax.swing.BoxLayout(pnlProximos, javax.swing.BoxLayout.LINE_AXIS));
+        jScrollPane2.setViewportView(pnlProximos);
+
+        jScrollPane3.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        pnlPasados.setLayout(new javax.swing.BoxLayout(pnlPasados, javax.swing.BoxLayout.LINE_AXIS));
+        jScrollPane3.setViewportView(pnlPasados);
+
+        jScrollPane4.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        pnlCancelados.setLayout(new javax.swing.BoxLayout(pnlCancelados, javax.swing.BoxLayout.LINE_AXIS));
+        jScrollPane4.setViewportView(pnlCancelados);
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(42, 42, 42)
+                .addGap(64, 64, 64)
                 .addComponent(jLabel1)
-                .addGap(115, 115, 115)
-                .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(177, 177, 177)
                 .addComponent(jLabel3)
-                .addGap(41, 41, 41))
+                .addGap(56, 56, 56))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(77, 77, 77)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
+                .addGap(27, 27, 27)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane2))
+                .addGap(23, 23, 23))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -198,13 +193,13 @@ public class PnlConsultar extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JScrollBar jScrollBar1;
-    private javax.swing.JScrollBar jScrollBar2;
-    private javax.swing.JScrollBar jScrollBar3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JPanel pnlCancelados;
+    private javax.swing.JPanel pnlPasados;
+    private javax.swing.JPanel pnlProximos;
     // End of variables declaration//GEN-END:variables
 }

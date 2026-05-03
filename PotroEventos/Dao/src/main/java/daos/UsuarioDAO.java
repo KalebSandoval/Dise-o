@@ -34,8 +34,10 @@ public class UsuarioDAO implements IUsuarioDAO {
         }
         for (Usuario u : obtenerUsuarios()) {
             if (u.getIdUsuario().equals(idUsuario)) {
-                u.setCreditos(u.getCreditos() - cantidad);
-                return true;
+                if (u.getCreditos() >= cantidad) {
+                    u.setCreditos(u.getCreditos() - cantidad);
+                    return true;
+                }
             }
         }
         return false;
@@ -54,7 +56,7 @@ public class UsuarioDAO implements IUsuarioDAO {
         usuario1.setNombre("Andre");
         usuario1.setCorreo("andre1@gmail.com");
         usuario1.setContrasenia("12");
-        usuario1.setCreditos(0);
+        usuario1.setCreditos(100000);
 
         // usuario 2
         Usuario usuario2 = new Usuario();

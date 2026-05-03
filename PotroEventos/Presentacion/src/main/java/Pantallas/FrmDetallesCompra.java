@@ -7,6 +7,8 @@ package Pantallas;
 import Controlador.interfaz.ICoordinadorAplicacion;
 import dtos.ReservacionDTO;
 import java.awt.Image;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.ImageIcon;
 
 /**
@@ -33,6 +35,24 @@ public class FrmDetallesCompra extends javax.swing.JFrame {
         cargarDatos();
     }
     
+    private void limpiar(){
+        iconEvento.setIcon(null);
+        iconEvento.setText("");
+        iconQR.setIcon(null);
+        iconQR.setText("");
+        txtEvento.setText("");
+        txtAsientos.setText("");
+        txtFechaHora.setText("");
+        txtUbicacion.setText("");
+        txtHorasAntes.setText("48");
+    }
+    
+    public void setReservacion(ReservacionDTO reservacion){
+        limpiar();
+        this.reservacion = reservacion;
+        cargarDatos();
+    }
+    
     public void cargarDatos(){
         if(reservacion == null){
             return;
@@ -49,31 +69,39 @@ public class FrmDetallesCompra extends javax.swing.JFrame {
         Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
         iconEvento.setIcon(new ImageIcon(img));
         iconEvento.setText("");
-        ImageIcon icono2 = new ImageIcon(reservacion.getBoleto().getCodigoQR());
-        int ancho2 = getWidth();
-        int alto2 = getHeight();
-        if (ancho2 <= 0) {
-            ancho2 = 181;
+        
+        ImageIcon icono2 = new ImageIcon(reservacion.getBoleto().getCodigoQR());  
+        int tamañoQR = iconQR.getWidth();       
+        if (tamañoQR <= 0) {
+            tamañoQR = 150;
         }
-        if (alto2 <= 0) {
-            alto2 = 152;
-        }
-        Image img2 = icono.getImage().getScaledInstance(ancho2, alto2, Image.SCALE_SMOOTH);
+        Image img2 = icono2.getImage().getScaledInstance(tamañoQR, tamañoQR, Image.SCALE_SMOOTH);     
         iconQR.setIcon(new ImageIcon(img2));
         iconQR.setText("");
+//        ImageIcon icono2 = new ImageIcon(reservacion.getBoleto().getCodigoQR());
+//        int ancho2 = getWidth();
+//        int alto2 = getHeight();
+//        if (ancho2 <= 0) {
+//            ancho2 = 181;
+//        }
+//        if (alto2 <= 0) {
+//            alto2 = 152;
+//        }
+//        Image img2 = icono2.getImage().getScaledInstance(ancho2, alto2, Image.SCALE_SMOOTH);
+//        iconQR.setIcon(new ImageIcon(img2));
+//        iconQR.setText("");
         this.txtEvento.setText(reservacion.getBoleto().getEvento().getNombreEvento());
-        /*
-        no le movi nada a asientos, por eso marca algo x por el momento
-        */
         if(reservacion.getBoleto().getEvento().isGratuito()){
             txtAsientos.setText("LIBRE");
         } else {
             txtAsientos.setText(reservacion.getBoleto().getAsiento().getIdAsiento().toString());
         }
         //this.txtAsientos.setText("10, 11, 12");
-        this.txtFechaHora.setText(String.valueOf(reservacion.getBoleto().getEvento().getFechaHora()));
+        DateTimeFormatter formateadorFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formateadorHora = DateTimeFormatter.ofPattern("HH:mm");
+        this.txtFechaHora.setText(String.valueOf(reservacion.getBoleto().getEvento().getFechaHora().format(formateadorFecha)) + " - " + String.valueOf(reservacion.getBoleto().getEvento().getFechaHora().format(formateadorHora)));
         this.txtUbicacion.setText(reservacion.getBoleto().getEvento().getUbicacion().getNombre());
-        this.txtHorasAntes.setText(String.valueOf(reservacion.getBoleto().getEvento().getFechaHora().minusHours(48)));
+        this.txtHorasAntes.setText("48");
     }
 
     /**

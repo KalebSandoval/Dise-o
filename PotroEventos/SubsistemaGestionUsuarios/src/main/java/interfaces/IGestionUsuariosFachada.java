@@ -22,11 +22,11 @@ public interface IGestionUsuariosFachada {
 
     // --- Metodos para asociar un usuario a la sesion 
     
-    public UsuarioDTO vincularUsuario(UsuarioDTO usuario)throws GestionUsuarioException;
+    //public UsuarioDTO vincularUsuario(UsuarioDTO usuario)throws GestionUsuarioException;
     
     // --- Metodo para deslindar un usuario de una sesion ---
     
-    public void desvincularUsuario()throws GestionUsuarioException;
+    //public void desvincularUsuario()throws GestionUsuarioException;
     
     // --- Método que regresa el usuario con la sesion activa --- 
     

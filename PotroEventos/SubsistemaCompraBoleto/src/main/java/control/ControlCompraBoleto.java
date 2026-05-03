@@ -1,10 +1,12 @@
 package control;
 
+import adapters.UsuarioInstitucionalAdapter;
 import dtos.*;
 import objetosNegocio.*;
 import excepciones.CompraBoletoException;
 import excepciones.NegocioException;
 import excepciones.PagoException;
+import fachada.FachadaITSON;
 import fachada.PagoFachada;
 import interfaces.IAsientoBO;
 import interfaces.IAsientoEventoBO;
@@ -14,9 +16,12 @@ import interfaces.IReservacionBO;
 import interfaces.ISeccionBO;
 import interfaces.IUsuarioBO;
 import interfaz.IControlCompraBoleto;
+import interfaz.IITSON;
 import interfaz.IPago;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,6 +48,7 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
     private final ICategoriaBO categoriaBO;
     private final IUsuarioBO usuarioBO;
     private final IPago controlPago;
+    private final IITSON controlItson;
 
     /**
      * Lista de asientos pendientes de pago
@@ -66,6 +72,7 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
         this.categoriaBO = CategoriaBO.getInstance();
         this.usuarioBO = UsuarioBO.getInstance();
         this.controlPago = new PagoFachada();
+        this.controlItson = new FachadaITSON();
 
         this.asientosPendientesCompra = new ArrayList<>();
         this.totalPendienteCompra = 0L;
@@ -206,21 +213,32 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
      */
     public String generarCodigoQR(EventoDTO evento, AsientoEventoDTO asiento) throws CompraBoletoException {
         try {
-            int asientoID = (asiento == null) ? 0 : asiento.getIdAsiento().intValue();
-            int identificador = (asiento == null) ? LocalDateTime.now().getNano() : asientoID;
+            int asientoID = 0;
+            int identificador = 0;
+            if(asiento == null){
+                asientoID = 0;
+                identificador = LocalDateTime.now().getNano();
+            } else {
+                asientoID = asiento.getIdAsiento().intValue();
+                identificador = asiento.getIdAsiento().intValue();
+            }
 
             String datos = "Evento: " + evento.getNombreEvento()
                     + ", Fecha: " + evento.getFechaHora()
                     + ", Ubicación: " + evento.getUbicacion().getNombre()
                     + ", Asiento: " + asientoID;
-
+            
+            String ruta = "/src/main/resources/qrs-boletos";
+            Path directorioDestino = Paths.get("src", "main", "resources", "qrs-boletos");
+            if (!Files.exists(directorioDestino)) {
+                Files.createDirectories(directorioDestino);
+            }
+            
             File temp = QRCode.from(datos).to(ImageType.PNG).withSize(300, 300).file();
-            File finalQR = new File("qrs-boletos", "Boleto_" + identificador + evento.getIdEvento() + ".png");
-
-            Files.copy(temp.toPath(), finalQR.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-            return finalQR.getAbsolutePath();
-
+            String nombreArchivo = "Boleto_" + identificador + "_" + evento.getIdEvento() + ".png";
+            Path rutaDestino = directorioDestino.resolve(nombreArchivo);
+            Files.copy(temp.toPath(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+            return rutaDestino.toAbsolutePath().toString();
         } catch (Exception e) {
             throw new CompraBoletoException("Error al generar QR: " + e.getMessage());
         }
@@ -271,7 +289,8 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
             }
 
             if (reservacion.getCobro() != null) {
-                if (usuarioBO.restarCreditos(totalCompra.intValue() * 2, reservacion.getUsuario().getIdUsuario())) {
+                System.out.println((int)(totalCompra/100.0 * 2));
+                if (usuarioBO.restarCreditos((int)(totalCompra/100.0 * 2), reservacion.getUsuario().getIdUsuario())) {
                     asientoEventoBO.venderAsiento(reservacion.getBoleto().getAsiento().getIdAsiento());
                     reservacionBO.agregarReservacion(reservacion);
                     return true;
@@ -321,5 +340,9 @@ public class ControlCompraBoleto implements IControlCompraBoleto {
      */
     public Long getTotalPendiente() {
         return totalPendienteCompra;
+    }
+    
+    public boolean validarCredencialesITSON(UsuarioInstitucionalDTO usuario){
+        return controlItson.validarUsuarioITSON(UsuarioInstitucionalAdapter.dtoAInfraestructura(usuario));
     }
 }

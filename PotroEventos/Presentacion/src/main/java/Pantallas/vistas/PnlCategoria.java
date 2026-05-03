@@ -7,6 +7,7 @@ package Pantallas.vistas;
 import Controlador.coordinador.CoordinadorAplicacion;
 import Controlador.interfaz.ICoordinadorAplicacion;
 import dtos.CategoriaDTO;
+import dtos.UsuarioDTO;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.Panel;
@@ -22,6 +23,7 @@ public class PnlCategoria extends javax.swing.JPanel {
     private CategoriaDTO categoria;
     private Component padre;
     private ICoordinadorAplicacion coordinador;
+    private UsuarioDTO usuario;
 
     /**
      * Creates new form PnlCategoria
@@ -30,6 +32,7 @@ public class PnlCategoria extends javax.swing.JPanel {
         this.categoria = categoria;
         this.padre = padre;
         this.coordinador = coordinador;
+        this.usuario = coordinador.getUsuarioSesion();
         initComponents();
         setImagen();
 

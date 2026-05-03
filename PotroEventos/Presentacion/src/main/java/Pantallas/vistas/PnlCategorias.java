@@ -6,6 +6,7 @@ package Pantallas.vistas;
 
 import Controlador.interfaz.ICoordinadorAplicacion;
 import dtos.CategoriaDTO;
+import dtos.UsuarioDTO;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
@@ -19,12 +20,14 @@ import javax.swing.ImageIcon;
 public class PnlCategorias extends javax.swing.JPanel {
 
     private ICoordinadorAplicacion coordinador;
+    private UsuarioDTO usuario;
 
     /**
      * Creates new form PnlConsultarEvento
      */
     public PnlCategorias(ICoordinadorAplicacion coordinador) {
         this.coordinador = coordinador;
+        this.usuario = coordinador.getUsuarioSesion();
         initComponents();
         for(CategoriaDTO categoria : coordinador.consultarCategorias()){
             PnlCategoria panel = new PnlCategoria(categoria, this, coordinador);

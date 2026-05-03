@@ -4,6 +4,10 @@
  */
 package Pantallas;
 
+import Controlador.interfaz.ICoordinadorAplicacion;
+import dtos.UsuarioInstitucionalDTO;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Aaron Burciaga - 262788
@@ -14,12 +18,20 @@ package Pantallas;
 public class FrmRegistroItson extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmRegistroItson.class.getName());
+    private ICoordinadorAplicacion coordinador;
+    private boolean exitoRegistro = false;
 
     /**
      * Creates new form frmRegistroItson
      */
-    public FrmRegistroItson() {
+    public FrmRegistroItson(ICoordinadorAplicacion coordinador) {
         initComponents();
+        setLocationRelativeTo(null);
+        this.coordinador = coordinador;
+    }
+    
+    public boolean registroExitoso(){
+        return exitoRegistro;
     }
 
     /**
@@ -36,12 +48,12 @@ public class FrmRegistroItson extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+        btnIngresar = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
-        jLabel17 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        txtNoItson = new javax.swing.JLabel();
+        txtID = new javax.swing.JTextField();
+        txtContrasenia = new javax.swing.JPasswordField();
+        btnVolver = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
@@ -62,16 +74,22 @@ public class FrmRegistroItson extends javax.swing.JFrame {
         jLabel12.setFont(new java.awt.Font("Segoe UI Black", 1, 24)); // NOI18N
         jLabel12.setText("ID");
 
-        jButton3.setBackground(new java.awt.Color(0, 119, 255));
-        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Ingresar");
+        btnIngresar.setBackground(new java.awt.Color(0, 119, 255));
+        btnIngresar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnIngresar.setForeground(new java.awt.Color(255, 255, 255));
+        btnIngresar.setText("Ingresar");
+        btnIngresar.addActionListener(this::btnIngresarActionPerformed);
 
         jPanel4.setBackground(new java.awt.Color(217, 217, 217));
 
-        jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel17.setForeground(new java.awt.Color(0, 51, 204));
-        jLabel17.setText("<html><u>No soy personal/alumnado ITSON.</u></font></html>");
+        txtNoItson.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        txtNoItson.setForeground(new java.awt.Color(0, 51, 204));
+        txtNoItson.setText("<html><u>No soy personal/alumnado ITSON.</u></font></html>");
+        txtNoItson.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtNoItsonMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -79,21 +97,22 @@ public class FrmRegistroItson extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(402, 402, 402)
-                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNoItson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(10, Short.MAX_VALUE)
-                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtNoItson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
-        jButton1.setBackground(new java.awt.Color(0, 119, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Volver");
+        btnVolver.setBackground(new java.awt.Color(0, 119, 255));
+        btnVolver.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        btnVolver.setForeground(new java.awt.Color(255, 255, 255));
+        btnVolver.setText("Volver");
+        btnVolver.addActionListener(this::btnVolverActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -108,7 +127,7 @@ public class FrmRegistroItson extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(25, 25, 25)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(200, 200, 200)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -116,11 +135,11 @@ public class FrmRegistroItson extends javax.swing.JFrame {
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtContrasenia, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGap(60, 60, 60)
-                                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 120, Short.MAX_VALUE)
                 .addComponent(jLabel2))
         );
@@ -133,16 +152,16 @@ public class FrmRegistroItson extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(41, 41, 41)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel12))
                         .addGap(30, 30, 30)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtContrasenia, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(38, 38, 38)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(48, 48, 48))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -220,13 +239,51 @@ public class FrmRegistroItson extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
+        // TODO add your handling code here:
+        String id = txtID.getText().trim();
+        String contrasenia = String.valueOf(txtContrasenia.getPassword());
+        if(id == null || id.isEmpty() || id.isBlank()){
+            JOptionPane.showMessageDialog(this, "Por favor ingrese su ID de Potro ITSON.");
+            return;
+        } else if(!id.matches("^0{0,5}[1-9]\\d{0,5}$")){
+            JOptionPane.showMessageDialog(this, "Formato de ID inválido.");
+            return;
+        }
+        UsuarioInstitucionalDTO usuario = new UsuarioInstitucionalDTO(id, contrasenia);
+        exitoRegistro = coordinador.validarCredenciales(usuario);
+        if(!exitoRegistro){
+            JOptionPane.showMessageDialog(this, "No se encontró al usuario ITSON, verifique tener la información correcta.");
+            return;
+        } else {
+            coordinador.setUsuarioITSON(usuario);
+            txtID.setText("");
+            txtContrasenia.setText("");
+            coordinador.volverAConsultarEvento();
+            dispose();
+        }
+        
+    }//GEN-LAST:event_btnIngresarActionPerformed
+
+    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+        // TODO add your handling code here:
+        coordinador.volverAConsultarEvento();
+        dispose();
+    }//GEN-LAST:event_btnVolverActionPerformed
+
+    private void txtNoItsonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtNoItsonMouseClicked
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "Lo sentimos, solo gente ITSON puede acceder al evento.");
+        coordinador.mostrarInicio();
+        dispose();
+    }//GEN-LAST:event_txtNoItsonMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnIngresar;
+    private javax.swing.JButton btnVolver;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -234,7 +291,8 @@ public class FrmRegistroItson extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JPasswordField txtContrasenia;
+    private javax.swing.JTextField txtID;
+    private javax.swing.JLabel txtNoItson;
     // End of variables declaration//GEN-END:variables
 }

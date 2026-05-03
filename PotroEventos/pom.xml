@@ -17,6 +17,7 @@
         <module>SubsistemaPago</module>
         <module>SubsistemaCompraBoleto</module>
         <module>SubsistemaGestionUsuarios</module>
+        <module>SubsistemaITSON</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

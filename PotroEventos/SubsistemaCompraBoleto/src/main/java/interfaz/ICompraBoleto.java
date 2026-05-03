@@ -9,6 +9,7 @@ import dtos.CategoriaDTO;
 import dtos.CobroDTO;
 import dtos.ReservacionDTO;
 import dtos.TarjetaDTO;
+import dtos.UsuarioInstitucionalDTO;
 import excepciones.CompraBoletoException;
 import java.util.List;
 import java.util.Map;
@@ -81,5 +82,7 @@ public interface ICompraBoleto {
     Long getTotalPendiente();
 
     public Map<SeccionDTO, List<AsientoEventoDTO>> obtenerMapaOcupacion(Long idEvento) throws CompraBoletoException;
+    
+    public boolean validarCredencialesITSON(UsuarioInstitucionalDTO usuario);
 
 }

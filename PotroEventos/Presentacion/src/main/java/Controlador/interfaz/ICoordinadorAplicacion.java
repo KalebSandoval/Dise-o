@@ -10,6 +10,7 @@ import dtos.ReservacionDTO;
 import dtos.SeccionDTO;
 import dtos.TarjetaDTO;
 import dtos.UsuarioDTO;
+import dtos.UsuarioInstitucionalDTO;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,8 @@ public interface ICoordinadorAplicacion {
     public void mostrarInfoEvento(EventoDTO evento);
 
     public void mostrarDetalles(ReservacionDTO reservacion);
+    
+    public void mostarRegistroITSON();
 
     public void finalizarCompra();
 
@@ -67,6 +70,10 @@ public interface ICoordinadorAplicacion {
     public void setUsuarioSesion(UsuarioDTO usuario);
 
     public UsuarioDTO getUsuarioSesion();
+    
+    public void setUsuarioITSON(UsuarioInstitucionalDTO usuario);
+    
+    public UsuarioInstitucionalDTO getUsuarioITSON();
 
     public void cerrarSesion();
 
@@ -81,4 +88,6 @@ public interface ICoordinadorAplicacion {
     Long getTotalPendiente();
     
     String generarQR(EventoDTO evento, AsientoEventoDTO asiento);
+    
+    boolean validarCredenciales(UsuarioInstitucionalDTO credenciales);
 }

@@ -33,6 +33,7 @@ public class ReservacionDAO implements IReservacionDAO {
         reservacion.setIdReservacion(contador+1L);
         reservaciones.add(reservacion);
         if(reservaciones.size() != contador){
+            System.out.println("Sí se agregó la reservación.");
             return true;
         }
         return false;
@@ -45,6 +46,7 @@ public class ReservacionDAO implements IReservacionDAO {
         for(Reservacion r : reservaciones){
             if(r.getUsuario().getIdUsuario() == idUsuario){
                 reser.add(r);
+                System.out.println("Sí hay reservaciones del usuario.");
             }
         }
         

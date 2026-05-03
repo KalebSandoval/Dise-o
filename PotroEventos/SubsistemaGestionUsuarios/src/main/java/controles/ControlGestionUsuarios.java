@@ -44,33 +44,33 @@ public class ControlGestionUsuarios {
         return this.usuarioActivo;
     }
     
-    /**
-     * Desvincula un usuario al cerrar sesión
-     */
-    public void limpiarSesion() throws GestionUsuarioException{
-        try {
-            usuarioBO.desAsociarUsuario();
-
-            this.usuarioActivo = null;
-        } catch (NegocioException ex) {
-           throw new GestionUsuarioException("Error al obtener la información del usuario: " + ex.getMessage());
-        }
-    }
+//    /**
+//     * Desvincula un usuario al cerrar sesión
+//     */
+//    public void limpiarSesion() throws GestionUsuarioException{
+//        try {
+//            usuarioBO.desAsociarUsuario();
+//
+//            this.usuarioActivo = null;
+//        } catch (NegocioException ex) {
+//           throw new GestionUsuarioException("Error al obtener la información del usuario: " + ex.getMessage());
+//        }
+//    }
     
-    /**
-     * Para que otras partes del sistema sepan a quién está asociado
-     * @return 
-     */
-    public UsuarioDTO obtenerUsuarioActivo(UsuarioDTO usuario)throws GestionUsuarioException{
-        
-        try {
-            UsuarioDTO user = usuarioBO.asociarUsuario(usuario);
-
-            return usuario;
-        } catch (Exception ex) {
-            throw new GestionUsuarioException("Error al obtener la información del usuario: " + ex.getMessage());
-        }
-    }
+//    /**
+//     * Para que otras partes del sistema sepan a quién está asociado
+//     * @return 
+//     */
+//    public UsuarioDTO obtenerUsuarioActivo(UsuarioDTO usuario)throws GestionUsuarioException{
+//        
+//        try {
+//            UsuarioDTO user = usuarioBO.asociarUsuario(usuario);
+//
+//            return usuario;
+//        } catch (Exception ex) {
+//            throw new GestionUsuarioException("Error al obtener la información del usuario: " + ex.getMessage());
+//        }
+//    }
 
     /**
      * Auxiliar que regresa el usuario activo

@@ -62,6 +62,7 @@ public class FrmPlantillaSistema extends javax.swing.JFrame {
      */
     public FrmPlantillaSistema(ICoordinadorAplicacion coordinador) {
         this.coordinador = coordinador;
+        this.usuario = coordinador.getUsuarioSesion();
         initComponents();
         setLocationRelativeTo(null);
         jpnlContenedor.setLayout(new GridLayout(0, 3, 10, 10));
@@ -212,9 +213,9 @@ public class FrmPlantillaSistema extends javax.swing.JFrame {
                 .addComponent(botonInicio1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(creditos, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(creditos, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(88, 88, 88)
                 .addComponent(btnCerrarSesion)
                 .addGap(18, 18, 18))
         );
